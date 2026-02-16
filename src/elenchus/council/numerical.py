@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 import anthropic
 import structlog
 
+from elenchus import extract_json
 from elenchus.council.base import BaseCouncilor
 from elenchus.state import CouncilorResult
 
@@ -74,7 +74,7 @@ class NumericalCouncilor(BaseCouncilor):
         raw = response.content[0].text
         log.debug("numerical.raw_response", raw=raw[:200])
 
-        data = json.loads(raw)
+        data = extract_json(raw)
 
         result = CouncilorResult(
             strategy=self.strategy,
@@ -120,4 +120,4 @@ class NumericalCouncilor(BaseCouncilor):
         raw = response.content[0].text
         log.debug("numerical.predict_response", raw=raw[:200])
 
-        return json.loads(raw)
+        return extract_json(raw)

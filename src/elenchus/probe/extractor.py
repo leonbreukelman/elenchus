@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import json
-
 import anthropic
 import structlog
 
+from elenchus import extract_json
 from elenchus.state import Constraint
 
 logger = structlog.get_logger()
@@ -49,5 +48,5 @@ async def extract_constraints(problem: str, solution: str) -> list[Constraint]:
     )
     raw = response.content[0].text
     logger.info("constraint_extraction", raw=raw)
-    parsed = json.loads(raw)
+    parsed = extract_json(raw)
     return [Constraint(**c) for c in parsed]

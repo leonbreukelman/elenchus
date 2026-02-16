@@ -66,7 +66,7 @@ def should_probe(state: EngineState) -> str:
     consensus = state["consensus"]
     routing = state["routing"]
 
-    if routing.complexity == "simple" and consensus.agreement == "unanimous":
+    if routing.complexity in ("simple", "low") and consensus.agreement == "unanimous":
         return "skip_probe"
 
     if consensus.agreement == "unanimous":

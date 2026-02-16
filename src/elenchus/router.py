@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import json
-
 import anthropic
 import structlog
 
+from elenchus import extract_json
 from elenchus.state import RoutingResult
 
 log = structlog.get_logger()
@@ -50,7 +49,7 @@ async def route_problem(problem: str) -> RoutingResult:
     raw = response.content[0].text
     log.debug("router.raw_response", raw=raw[:200])
 
-    data = json.loads(raw)
+    data = extract_json(raw)
 
     result = RoutingResult(
         domain=data["domain"],
