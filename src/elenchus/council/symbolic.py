@@ -21,6 +21,14 @@ You are a mathematical solver that generates SymPy Python code.
 Given a math problem, write Python code using SymPy to solve it.
 The code MUST print the final numeric answer as the last line of output.
 
+IMPORTANT: Assign every given numeric value to a named variable on its own line \
+BEFORE using it in equations. For example, write:
+  h0 = 20
+  v0 = 15
+  equation = h0 + v0*t
+NOT:
+  equation = 20 + 15*t
+
 Return ONLY valid JSON with:
 - "code": the complete Python code (using sympy, must print the answer)
 - "reasoning": brief explanation of the approach
