@@ -114,7 +114,17 @@ async def score_alignment_node(state: ProbeState) -> dict:
         if not gt["success"]:
             continue
 
-        actual = float(gt["output"])
+        try:
+            actual = float(gt["output"])
+        except (ValueError, TypeError):
+            # Ground truth output isn't a plain number — try extracting last number
+            import re
+
+            numbers = re.findall(r"-?\d+\.?\d*(?:e[+-]?\d+)?", gt["output"] or "")
+            if not numbers:
+                logger.warning("ground_truth_not_numeric", output=gt["output"][:200])
+                continue
+            actual = float(numbers[-1])
         constraint_name = gt["perturbation_name"]
 
         perturbation = next(

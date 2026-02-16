@@ -61,10 +61,25 @@ def _get_client() -> anthropic.AsyncAnthropic:
 
 
 def _parse_numeric_output(output: str) -> float:
-    """Extract the last line of sandbox output and convert to float."""
+    """Extract a numeric answer from sandbox output.
+
+    Tries in order:
+    1. Last line as a plain float
+    2. Last number found anywhere in the output
+    """
     lines = output.strip().splitlines()
     last_line = lines[-1].strip()
-    return float(last_line)
+    try:
+        return float(last_line)
+    except ValueError:
+        pass
+    # Find all numbers in the output, return the last one
+    import re
+
+    numbers = re.findall(r"-?\d+\.?\d*(?:e[+-]?\d+)?", output)
+    if numbers:
+        return float(numbers[-1])
+    raise ValueError(f"No numeric value found in output: {output!r}")
 
 
 class SymbolicCouncilor(BaseCouncilor):
