@@ -44,9 +44,14 @@ class ProbeState(TypedDict, total=False):
 
 async def extract_constraints_node(state: ProbeState) -> dict:
     cr = state["council_result"]
+    symbolic_result = next(
+        (r for r in cr.councilor_results if r.strategy == "symbolic" and r.code),
+        None,
+    )
     constraints = await extract_constraints(
         problem=cr.problem,
         solution=str(cr.consensus.answer),
+        symbolic_code=symbolic_result.code if symbolic_result else None,
     )
     return {"constraints": constraints}
 

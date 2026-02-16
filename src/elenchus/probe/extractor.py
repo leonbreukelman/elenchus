@@ -28,23 +28,53 @@ Return ONLY a valid JSON array.
 Problem: {problem}
 Solution: {solution}"""
 
+EXTRACTION_WITH_CODE_PROMPT = """\
+Given this math problem, its solution, and the SymPy code that solved it, \
+identify every perturbable input constraint.
+
+IMPORTANT: Use the exact variable names from the code (e.g., "P" not \
+"principal_amount"). The constraint name MUST match the variable assignment \
+in the code.
+
+For each, return a JSON array of objects with:
+- name: the exact variable name from the code
+- original_value: the numeric value
+- dtype: "numeric"
+- role: plain English description of what this constraint represents
+- perturbation_range: [min, max] of valid alternative values
+
+Only include input variables that are directly assigned a literal value in the \
+code (e.g., P = 10000). Do NOT include computed variables (e.g., \
+A = P*(1+r/n)**(n*t)).
+
+Return ONLY a valid JSON array.
+
+Problem: {problem}
+Solution: {solution}
+Code:
+{symbolic_code}"""
+
 
 def _get_client() -> anthropic.AsyncAnthropic:
     return anthropic.AsyncAnthropic()
 
 
-async def extract_constraints(problem: str, solution: str) -> list[Constraint]:
-    """Extract perturbable constraints from a problem-solution pair."""
+async def extract_constraints(problem: str, solution: str, symbolic_code: str | None = None) -> list[Constraint]:
+    """Extract perturbable constraints from a problem-solution pair.
+
+    When *symbolic_code* is provided, the LLM is instructed to use the code's
+    variable names as constraint names so they match at substitution time.
+    """
+    if symbolic_code is not None:
+        prompt = EXTRACTION_WITH_CODE_PROMPT.format(problem=problem, solution=solution, symbolic_code=symbolic_code)
+    else:
+        prompt = EXTRACTION_PROMPT.format(problem=problem, solution=solution)
+
     client = _get_client()
     response = await client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=512,
-        messages=[
-            {
-                "role": "user",
-                "content": EXTRACTION_PROMPT.format(problem=problem, solution=solution),
-            }
-        ],
+        messages=[{"role": "user", "content": prompt}],
     )
     raw = response.content[0].text
     logger.info("constraint_extraction", raw=raw)

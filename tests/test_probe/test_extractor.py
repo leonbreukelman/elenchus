@@ -31,3 +31,79 @@ async def test_extract_constraints_compound_interest():
     assert all(isinstance(c, Constraint) for c in constraints)
     assert constraints[0].name == "principal"
     assert constraints[1].perturbation_range == (0.01, 0.20)
+
+
+@pytest.mark.asyncio
+async def test_extract_constraints_with_symbolic_code():
+    """When symbolic_code is provided, constraint names must match code variable names."""
+    symbolic_code = (
+        "from sympy import *\n"
+        "P = 10000\n"
+        "r = Rational(5, 100)\n"
+        "n = 12\n"
+        "t = 3\n"
+        "A = P * (1 + r/n) ** (n*t)\n"
+        "print(float(A))\n"
+    )
+    mock_response = AsyncMock()
+    mock_response.content = [
+        AsyncMock(
+            text='[{"name":"P","original_value":10000,"dtype":"numeric",'
+            '"role":"principal amount","perturbation_range":[1000,50000]},'
+            '{"name":"r","original_value":0.05,"dtype":"numeric",'
+            '"role":"annual interest rate","perturbation_range":[0.01,0.20]},'
+            '{"name":"n","original_value":12,"dtype":"numeric",'
+            '"role":"compounding frequency per year","perturbation_range":[1,365]},'
+            '{"name":"t","original_value":3,"dtype":"numeric",'
+            '"role":"investment period in years","perturbation_range":[1,30]}]'
+        )
+    ]
+
+    with patch("elenchus.probe.extractor._get_client") as mock_client:
+        mock_create = AsyncMock(return_value=mock_response)
+        mock_client.return_value.messages.create = mock_create
+        constraints = await extract_constraints(
+            problem="$10,000 at 5% compounded monthly for 3 years",
+            solution="$11,614.72",
+            symbolic_code=symbolic_code,
+        )
+
+    assert len(constraints) == 4
+    names = [c.name for c in constraints]
+    assert names == ["P", "r", "n", "t"]
+
+    # Verify the prompt included the symbolic code
+    call_args = mock_create.call_args
+    prompt_content = call_args.kwargs["messages"][0]["content"]
+    assert "P = 10000" in prompt_content
+    assert "variable names from the code" in prompt_content
+
+
+@pytest.mark.asyncio
+async def test_extract_constraints_without_symbolic_code_uses_fallback():
+    """When symbolic_code is None, the original prompt is used (no code reference)."""
+    mock_response = AsyncMock()
+    mock_response.content = [
+        AsyncMock(
+            text='[{"name":"principal","original_value":10000,"dtype":"numeric",'
+            '"role":"initial investment amount","perturbation_range":[1000,50000]}]'
+        )
+    ]
+
+    with patch("elenchus.probe.extractor._get_client") as mock_client:
+        mock_create = AsyncMock(return_value=mock_response)
+        mock_client.return_value.messages.create = mock_create
+        constraints = await extract_constraints(
+            problem="$10,000 at 5% compounded monthly for 3 years",
+            solution="$11,614.72",
+            symbolic_code=None,
+        )
+
+    assert len(constraints) == 1
+    assert constraints[0].name == "principal"
+
+    # Verify the prompt did NOT include code-specific instructions
+    call_args = mock_create.call_args
+    prompt_content = call_args.kwargs["messages"][0]["content"]
+    assert "variable names from the code" not in prompt_content
+    assert "Code:" not in prompt_content
