@@ -128,7 +128,7 @@ async def score_alignment_node(state: ProbeState) -> dict:
 
         for pred in matching_preds:
             try:
-                predicted = float(pred.get("new_answer", 0))
+                predicted = float(pred.get("predicted_answer", 0))
             except (ValueError, TypeError):
                 predicted = 0.0
 
