@@ -1,0 +1,14 @@
+probe:
+  sample_rate_unanimous: 0.30
+  perturbation_budget: 3
+  confidence_threshold: 0.80
+  reject_threshold: 0.50
+  sandbox:
+    timeout: 30
+    allowed_imports: ["sympy", "numpy"]
+
+council:
+  strategies: ["algebraic", "numerical", "symbolic"]
+  consensus:
+    tolerance_relative: 1.0e-6
+    debate_rounds: 1

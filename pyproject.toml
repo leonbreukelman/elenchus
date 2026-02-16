@@ -1,0 +1,37 @@
+[project]
+name = "elenchus"
+version = "0.1.0"
+description = "Neuro-symbolic math verification via perturbation testing"
+requires-python = ">=3.12"
+dependencies = [
+    "langgraph>=1.0",
+    "anthropic>=0.40",
+    "sympy>=1.13",
+    "pydantic>=2",
+    "pyyaml>=6",
+    "structlog>=24.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6",
+    "ruff>=0.15",
+    "pre-commit>=4",
+]
+
+[tool.uv]
+managed = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

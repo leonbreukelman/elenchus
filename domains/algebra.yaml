@@ -1,0 +1,11 @@
+name: algebra
+extends: _base
+
+router:
+  problem_types: ["equation", "system", "word_problem", "inequality"]
+
+probe:
+  preferred_perturbations:
+    - type: "coefficient_change"
+    - type: "constant_shift"
+    - type: "boundary_value"
