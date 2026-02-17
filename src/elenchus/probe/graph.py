@@ -12,6 +12,7 @@ from elenchus.council.numerical import NumericalCouncilor
 from elenchus.council.symbolic import SymbolicCouncilor
 from elenchus.probe.extractor import extract_constraints
 from elenchus.probe.ground_truth import compute_ground_truth
+from elenchus.probe.mechanism_judge import judge_mechanism
 from elenchus.probe.perturbation import generate_perturbations
 from elenchus.probe.predictor import collect_predictions
 from elenchus.probe.scorer import compute_alignment_score, compute_overall_verdict
@@ -159,20 +160,30 @@ async def score_alignment_node(state: ProbeState) -> dict:
             except (ValueError, TypeError):
                 predicted = 0.0
 
+            mechanism_score = await judge_mechanism(
+                constraint_role=perturbation.constraint.role,
+                original_value=perturbation.constraint.original_value,
+                new_value=perturbation.new_value,
+                original_answer=original_answer,
+                actual_answer=actual,
+                predicted_reasoning=pred.get("predicted_reasoning", pred.get("mechanism", "")),
+            )
+
             score = compute_alignment_score(
                 predicted=predicted,
                 actual=actual,
                 original=original_answer,
+                mechanism_score=mechanism_score,
             )
 
             sensitivity_results.append(
                 SensitivityResult(
                     perturbation=perturbation,
                     predicted_answer=predicted,
-                    predicted_reasoning=pred.get("mechanism", ""),
+                    predicted_reasoning=pred.get("predicted_reasoning", pred.get("mechanism", "")),
                     actual_answer=actual,
                     alignment_score=score,
-                    reasoning_quality=0.5,
+                    reasoning_quality=mechanism_score,
                 )
             )
 

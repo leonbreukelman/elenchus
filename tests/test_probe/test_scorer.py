@@ -1,3 +1,5 @@
+import pytest
+
 from elenchus.probe.scorer import (
     ProbeVerdict,
     compute_direction_score,
@@ -80,3 +82,25 @@ def test_verdict_at_boundaries():
 
     v3, _ = compute_overall_verdict(0.49)
     assert v3 == ProbeVerdict.EASY_TO_VARY
+
+
+def test_alignment_score_uses_provided_mechanism_score():
+    """When a real mechanism score is provided, it should replace the default."""
+    from elenchus.probe.scorer import compute_alignment_score
+
+    score_with_high_mechanism = compute_alignment_score(
+        predicted=100.0,
+        actual=100.0,
+        original=90.0,
+        mechanism_score=0.9,
+    )
+    score_with_low_mechanism = compute_alignment_score(
+        predicted=100.0,
+        actual=100.0,
+        original=90.0,
+        mechanism_score=0.1,
+    )
+    # quant=1.0, direction=1.0 → 0.4*1 + 0.3*1 + 0.3*mechanism
+    assert score_with_high_mechanism == pytest.approx(0.4 + 0.3 + 0.3 * 0.9)
+    assert score_with_low_mechanism == pytest.approx(0.4 + 0.3 + 0.3 * 0.1)
+    assert score_with_high_mechanism > score_with_low_mechanism
