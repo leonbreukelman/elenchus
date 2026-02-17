@@ -7,6 +7,7 @@ import pytest
 from elenchus.state import (
     ConsensusResult,
     Constraint,
+    ConstraintDtype,
     CouncilorResult,
     CouncilResult,
     DeutschProbeResult,
@@ -209,7 +210,7 @@ class TestConstraint:
         )
         assert c.name == "initial_velocity"
         assert c.original_value == 10.0
-        assert c.dtype == "float"
+        assert c.dtype == ConstraintDtype.CONTINUOUS  # "float" coerces to continuous
         assert c.role == "parameter"
         assert c.perturbation_range == (5.0, 15.0)
 
@@ -224,6 +225,75 @@ class TestConstraint:
         lo, hi = c.perturbation_range
         assert lo == 0.5
         assert hi == 2.0
+
+
+# ---------------------------------------------------------------------------
+# ConstraintDtype
+# ---------------------------------------------------------------------------
+
+
+class TestConstraintDtype:
+    def test_dtype_continuous(self):
+        c = Constraint(
+            name="rate",
+            original_value=0.05,
+            dtype="continuous",
+            role="interest rate",
+            perturbation_range=(0.01, 0.20),
+        )
+        assert c.dtype == ConstraintDtype.CONTINUOUS
+
+    def test_dtype_integer(self):
+        c = Constraint(
+            name="people",
+            original_value=5,
+            dtype="integer",
+            role="number of people",
+            perturbation_range=(1, 20),
+        )
+        assert c.dtype == ConstraintDtype.INTEGER
+
+    def test_dtype_probability(self):
+        c = Constraint(
+            name="chance",
+            original_value=0.3,
+            dtype="probability",
+            role="probability of rain",
+            perturbation_range=(0.0, 1.0),
+        )
+        assert c.dtype == ConstraintDtype.PROBABILITY
+
+    def test_backward_compat_numeric_maps_to_continuous(self):
+        """Old 'numeric' dtype should still work, mapping to continuous."""
+        c = Constraint(
+            name="x",
+            original_value=10,
+            dtype="numeric",
+            role="some value",
+            perturbation_range=(1, 100),
+        )
+        assert c.dtype == ConstraintDtype.CONTINUOUS
+
+    def test_backward_compat_float_maps_to_continuous(self):
+        """Old 'float' dtype should still work, mapping to continuous."""
+        c = Constraint(
+            name="v",
+            original_value=10.0,
+            dtype="float",
+            role="parameter",
+            perturbation_range=(5.0, 15.0),
+        )
+        assert c.dtype == ConstraintDtype.CONTINUOUS
+
+    def test_enum_members(self):
+        assert set(ConstraintDtype) == {
+            ConstraintDtype.CONTINUOUS,
+            ConstraintDtype.INTEGER,
+            ConstraintDtype.PROBABILITY,
+        }
+
+    def test_enum_is_str(self):
+        assert isinstance(ConstraintDtype.CONTINUOUS, str)
 
 
 # ---------------------------------------------------------------------------

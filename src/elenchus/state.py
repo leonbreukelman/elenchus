@@ -9,7 +9,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class ProbeVerdict(str, Enum):
@@ -58,14 +58,29 @@ class CouncilResult(BaseModel):
     consensus: ConsensusResult
 
 
+class ConstraintDtype(str, Enum):
+    """Type classification for perturbation constraints."""
+
+    CONTINUOUS = "continuous"
+    INTEGER = "integer"
+    PROBABILITY = "probability"
+
+
 class Constraint(BaseModel):
     """A named constraint extracted from the problem for perturbation testing."""
 
     name: str
     original_value: Any
-    dtype: str
+    dtype: ConstraintDtype
     role: str
     perturbation_range: tuple[float, float]
+
+    @field_validator("dtype", mode="before")
+    @classmethod
+    def _coerce_legacy_dtype(cls, v: str) -> str:
+        if v in ("numeric", "float"):
+            return "continuous"
+        return v
 
 
 class Perturbation(BaseModel):
