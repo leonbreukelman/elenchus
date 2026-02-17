@@ -88,6 +88,23 @@ async def compute_ground_truths_node(state: ProbeState) -> dict:
         logger.warning("no_symbolic_code_for_ground_truth")
         return {"ground_truths": []}
 
+    # Validate: symbolic answer must match consensus before trusting the code
+    try:
+        symbolic_answer = float(symbolic_result.answer)
+        consensus_answer = float(cr.consensus.answer)
+        rel_error = abs(symbolic_answer - consensus_answer) / max(abs(consensus_answer), 1e-10)
+        if rel_error > 1e-3:
+            logger.warning(
+                "symbolic_answer_disagrees_with_consensus",
+                symbolic=symbolic_answer,
+                consensus=consensus_answer,
+                rel_error=rel_error,
+            )
+            return {"ground_truths": []}
+    except (ValueError, TypeError):
+        logger.warning("ground_truth_validation_failed_non_numeric")
+        return {"ground_truths": []}
+
     ground_truths = []
     for perturbation in state["perturbations"]:
         result = await compute_ground_truth(symbolic_result.code, perturbation)
