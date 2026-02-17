@@ -107,3 +107,32 @@ async def test_extract_constraints_without_symbolic_code_uses_fallback():
     prompt_content = call_args.kwargs["messages"][0]["content"]
     assert "variable names from the code" not in prompt_content
     assert "Code:" not in prompt_content
+
+
+@pytest.mark.asyncio
+async def test_extract_constraints_prompt_requests_dtype():
+    """The extraction prompt should ask for dtype classification."""
+    mock_response = AsyncMock()
+    mock_response.content = [
+        AsyncMock(
+            text='[{"name":"people","original_value":5,"dtype":"integer",'
+            '"role":"number of workers","perturbation_range":[1,20]}]'
+        )
+    ]
+
+    with patch("elenchus.probe.extractor._get_client") as mock_client:
+        mock_create = AsyncMock(return_value=mock_response)
+        mock_client.return_value.messages.create = mock_create
+        constraints = await extract_constraints(
+            problem="5 workers build a wall in 10 days",
+            solution="10 days",
+        )
+
+    assert len(constraints) == 1
+    assert constraints[0].dtype.value == "integer"
+
+    # Verify the prompt includes dtype guidance
+    call_args = mock_create.call_args
+    prompt_content = call_args.kwargs["messages"][0]["content"]
+    assert "integer" in prompt_content
+    assert "probability" in prompt_content

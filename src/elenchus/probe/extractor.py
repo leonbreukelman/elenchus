@@ -16,7 +16,9 @@ Given this math problem and its solution, identify every input constraint that t
 For each, return a JSON array of objects with:
 - name: variable name (snake_case)
 - original_value: the numeric value
-- dtype: "numeric" (for now, always numeric)
+- dtype: one of "continuous" (real-valued like prices, rates, distances), \
+"integer" (whole numbers like counts of people, items, days), or \
+"probability" (values bounded to [0, 1])
 - role: plain English description of what this constraint represents
 - perturbation_range: [min, max] of valid alternative values
 
@@ -39,7 +41,9 @@ in the code.
 For each, return a JSON array of objects with:
 - name: the exact variable name from the code
 - original_value: the numeric value
-- dtype: "numeric"
+- dtype: one of "continuous" (real-valued like prices, rates, distances), \
+"integer" (whole numbers like counts of people, items, days), or \
+"probability" (values bounded to [0, 1])
 - role: plain English description of what this constraint represents
 - perturbation_range: [min, max] of valid alternative values
 
