@@ -1,0 +1,66 @@
+{
+  "predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "problem": "The seats of a bus are arranged in 23 rows of 4 seats. At the start, 16 people climb. At the first stop, 15 people board the bus and 3 get off. At the second stop, 17 people get on the bus and 10 get off. How many empty seats are there after the second stop?",
+        "reasoning": "Let me work through this step by step.\n\nFirst, I need to find the total number of seats on the bus:\n- 23 rows × 4 seats per row = 92 seats total\n\nNow I'll track the number of people on the bus at each stage:\n\nStarting position:\n- 16 people climb on\n- People on bus: 16\n\nAfter first stop:\n- 15 people board, 3 get off\n- People on bus: 16 + 15 - 3 = 28\n\nAfter second stop:\n- 17 people get on, 10 get off\n- People on bus: 28 + 17 - 10 = 35\n\nFinally, calculate empty seats:\n- Total seats: 92\n- Occupied seats: 35\n- Empty seats: 92 - 35 = 57",
+        "estimate": "The bus has about 23 × 4 ≈ 90-100 seats. Starting with 16 people, adding roughly 15, then adding about 7 more (17 - 10), we get around 16 + 15 + 7 ≈ 38 people. So empty seats should be around 90 - 38 ≈ 50-55 seats.",
+        "answer": 57.0
+      },
+      {
+        "augmented": true,
+        "problem": "Kyle bought 2 glass bottles that can hold 15 origami stars each. He then bought another 3 identical glass bottles. How many stars must Kyle make to fill all the glass bottles he bought?",
+        "reasoning": "Let me break down this problem step by step:\n\n1. Kyle bought 2 glass bottles initially, each holding 15 origami stars\n2. He then bought another 3 identical glass bottles (also holding 15 stars each)\n3. Total number of bottles = 2 + 3 = 5 bottles\n4. Each bottle holds 15 stars\n5. Total stars needed = 5 bottles × 15 stars per bottle = 75 stars",
+        "estimate": "Quick mental math: He has about 5 bottles total, each holds 15 stars. 5 × 15 = 5 × 10 + 5 × 5 = 50 + 25 = 75 stars.",
+        "answer": 75.0
+      },
+      {
+        "augmented": true,
+        "problem": "Zach baked cookies for a bake sale. On Monday he baked 32 cookies. On Tuesday he ran out of sugar and could only bake half of the number of cookies he baked the day before. On Wednesday he baked three times the number of cookies he did on Tuesday, but his brother ate 4 of those cookies. How many cookies did he have at the end of the three days?",
+        "reasoning": "Let me work through this step-by-step:\n\n**Monday:** Zach baked 32 cookies.\n\n**Tuesday:** He could only bake half of what he baked on Monday.\n- Half of 32 = 32 ÷ 2 = 16 cookies\n\n**Wednesday:** He baked three times the number he did on Tuesday, but his brother ate 4.\n- Three times Tuesday's amount = 3 × 16 = 48 cookies\n- Brother ate 4, so remaining = 48 - 4 = 44 cookies\n\n**Total cookies at the end of three days:**\n- Monday: 32\n- Tuesday: 16\n- Wednesday: 44\n- Total = 32 + 16 + 44 = 92 cookies",
+        "estimate": "Quick mental math: Monday was about 30, Tuesday was about 15, Wednesday was about 45. Total would be roughly 30 + 15 + 45 = 90 cookies.",
+        "answer": 92.0
+      },
+      {
+        "problem": "Of 96 oranges, half were ripe. If 1/4 of the ripe oranges were eaten and 1/8 of the unripe oranges were eaten, how many were left eaten in total?",
+        "answer": 78.0
+      },
+      {
+        "problem": "Hazel walked 2 kilometers in the first hour. If she walked twice as far in the second hour, how far did she walk for 2 hours?",
+        "answer": 6.0
+      }
+    ],
+    "signature": {
+      "instructions": "Solve the given multi-step math word problem by showing your complete work. First, provide detailed reasoning that breaks down the problem into sequential steps, performing each calculation clearly. Then, create a quick estimate using mental math and rounded numbers to verify your answer is reasonable. Finally, state the exact numerical answer as a decimal number.",
+      "fields": [
+        {
+          "prefix": "Problem:",
+          "description": "A math problem to solve"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Detailed numerical computation steps"
+        },
+        {
+          "prefix": "Estimate:",
+          "description": "Initial estimate with rough mental math"
+        },
+        {
+          "prefix": "Answer:",
+          "description": "The final numeric answer"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.1.3",
+      "cloudpickle": "3.1"
+    }
+  }
+}

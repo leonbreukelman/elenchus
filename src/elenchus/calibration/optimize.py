@@ -29,7 +29,7 @@ def build_answer_metric(tolerance: float = 1e-2):
     Returns a callable(example, prediction) -> float.
     """
 
-    def metric(example, prediction) -> float:
+    def metric(example, prediction, trace=None) -> float:
         try:
             expected = float(example.answer)
             predicted = float(prediction.answer)
@@ -61,6 +61,7 @@ def run_optimization(
     strategy: str,
     model_name: str = "claude-sonnet-4-5-20250929",
     num_trials: int = 10,
+    num_candidates: int = 10,
     max_bootstrapped_demos: int = 3,
     max_labeled_demos: int = 5,
 ) -> Path:
@@ -94,6 +95,8 @@ def run_optimization(
     # Run MIPROv2
     optimizer = dspy.MIPROv2(
         metric=metric,
+        auto=None,
+        num_candidates=num_candidates,
         num_threads=4,
         max_bootstrapped_demos=max_bootstrapped_demos,
         max_labeled_demos=max_labeled_demos,
