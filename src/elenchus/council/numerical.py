@@ -60,6 +60,27 @@ class NumericalCouncilor(BaseCouncilor):
 
     async def solve(self, problem: str) -> CouncilorResult:
         """Solve the problem by estimating, then verifying numerically."""
+        from elenchus.calibration import loader as loader_module
+
+        calibrated = loader_module.load_optimized_prompt("numerical", SOLVE_MODEL)
+        if calibrated is not None:
+            try:
+                import dspy
+
+                dspy.configure(lm=dspy.LM(f"anthropic/{SOLVE_MODEL}"))
+                result = calibrated(problem=problem)
+                answer = float(result.answer)
+                log.info("numerical.solved_calibrated", answer=answer)
+                return CouncilorResult(
+                    strategy=self.strategy,
+                    answer=answer,
+                    reasoning=str(result.reasoning),
+                    confidence=0.85,
+                )
+            except Exception:
+                log.warning("numerical.calibrated_failed_fallback", exc_info=True)
+
+        # Fall through to original hand-written prompt
         client = _get_client()
 
         log.debug("numerical.solve", problem=problem[:80])
