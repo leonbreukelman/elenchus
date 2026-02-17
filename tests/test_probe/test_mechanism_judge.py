@@ -91,3 +91,34 @@ async def test_judge_clamps_out_of_range_scores():
             predicted_reasoning="Higher rate means more growth.",
         )
     assert score == 1.0
+
+
+@pytest.mark.asyncio
+async def test_judge_prompt_includes_delta_information():
+    """The judge prompt should include the numeric delta for verification."""
+    from elenchus.probe.mechanism_judge import judge_mechanism
+
+    mock_response = MagicMock()
+    mock_response.content = [MagicMock(text='{"score": 0.9, "reasoning": "Delta is correct."}')]
+
+    mock_client = AsyncMock()
+    mock_client.messages.create = AsyncMock(return_value=mock_response)
+
+    with patch("elenchus.probe.mechanism_judge._get_client", return_value=mock_client):
+        await judge_mechanism(
+            constraint_role="annual interest rate",
+            original_value=0.05,
+            new_value=0.08,
+            original_answer=11614.72,
+            actual_answer=12682.42,
+            predicted_reasoning="Higher rate increases compounding.",
+        )
+
+    # Inspect the prompt sent to the model
+    call_args = mock_client.messages.create.call_args
+    prompt_text = call_args.kwargs["messages"][0]["content"]
+
+    # Must contain the computed delta
+    assert "1067.7" in prompt_text  # 12682.42 - 11614.72 = 1067.70
+    # Must frame as verification, not open evaluation
+    assert "verify" in prompt_text.lower() or "justify" in prompt_text.lower()

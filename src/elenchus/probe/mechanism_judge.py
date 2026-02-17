@@ -12,8 +12,8 @@ logger = structlog.get_logger()
 JUDGE_MODEL = "claude-haiku-4-5-20251001"
 
 JUDGE_PROMPT = """\
-You are evaluating whether a mathematical reasoning explanation is coherent \
-and consistent with the observed change in answer.
+You are verifying whether a mathematical reasoning explanation justifies \
+a specific numeric change.
 
 A constraint was perturbed:
 - What changed: {constraint_role}
@@ -23,15 +23,16 @@ A constraint was perturbed:
 The answers:
 - Original answer: {original_answer}
 - Actual answer (ground truth): {actual_answer}
+- Delta (actual change): {delta}
 
 The councilor's reasoning about why the answer changed:
 "{predicted_reasoning}"
 
-Score 0.0-1.0 on whether the stated mechanism is:
-1. Mathematically coherent (the reasoning makes mathematical sense)
-2. Consistent with the observed change (the direction and magnitude of the \
-explanation matches what actually happened)
-3. Specific (names the actual mathematical relationship, not generic hand-waving)
+Verify whether the stated reasoning mathematically justifies a delta of \
+{delta}. Score 0.0-1.0:
+1. Does the reasoning identify the correct mathematical relationship?
+2. Is the explained mechanism consistent with a change of {delta}?
+3. Is the explanation specific (names the relationship, not generic)?
 
 Return ONLY valid JSON with:
 - "score": float between 0.0 and 1.0
@@ -62,12 +63,15 @@ async def judge_mechanism(
         logger.debug("mechanism_judge_no_reasoning")
         return 0.5
 
+    delta = round(actual_answer - original_answer, 2)
+
     prompt = JUDGE_PROMPT.format(
         constraint_role=constraint_role,
         original_value=original_value,
         new_value=new_value,
         original_answer=original_answer,
         actual_answer=actual_answer,
+        delta=delta,
         predicted_reasoning=predicted_reasoning,
     )
 
