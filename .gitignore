@@ -11,3 +11,4 @@ build/
 site/
 benchmark_gemini_flash*.json
 benchmark_gemini_flash*.log
+results/
