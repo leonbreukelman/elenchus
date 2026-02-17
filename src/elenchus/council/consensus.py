@@ -8,7 +8,7 @@ from elenchus.tools.sympy_tools import answers_match_numeric
 
 def evaluate_consensus(
     results: list[CouncilorResult],
-    rel_tol: float = 1e-6,
+    rel_tol: float = 1e-3,
 ) -> ConsensusResult:
     """Evaluate consensus across councilor results.
 
