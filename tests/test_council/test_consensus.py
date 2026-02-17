@@ -136,3 +136,24 @@ class TestEvaluateConsensus:
         consensus = evaluate_consensus(results)
         assert consensus.agreement == "none"
         assert consensus.answer is None
+
+    def test_consensus_with_wide_tolerance(self):
+        """Answers within 0.1% should be unanimous at 1e-3 tolerance."""
+        results = [
+            _make_result("algebraic", 18.9368, 0.9),
+            _make_result("numerical", 18.946, 0.85),
+            _make_result("symbolic", 18.9400, 1.0),
+        ]
+        consensus = evaluate_consensus(results, rel_tol=1e-3)
+        assert consensus.agreement == "unanimous"
+
+    def test_consensus_rejects_genuine_disagreement_at_1e_3(self):
+        """7.3% difference should still be caught at 1e-3 tolerance."""
+        results = [
+            _make_result("algebraic", 3.77, 0.8),
+            _make_result("numerical", 4.065, 0.85),
+            _make_result("symbolic", 4.065, 1.0),
+        ]
+        consensus = evaluate_consensus(results, rel_tol=1e-3)
+        assert consensus.agreement == "majority"
+        assert "algebraic" in consensus.dissenting_strategies

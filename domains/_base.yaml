@@ -10,5 +10,5 @@ probe:
 council:
   strategies: ["algebraic", "numerical", "symbolic"]
   consensus:
-    tolerance_relative: 1.0e-6
+    tolerance_relative: 1.0e-3
     debate_rounds: 1

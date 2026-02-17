@@ -10,6 +10,7 @@ from langgraph.graph import END, START, StateGraph
 from elenchus.council.algebraic import AlgebraicCouncilor
 from elenchus.council.numerical import NumericalCouncilor
 from elenchus.council.symbolic import SymbolicCouncilor
+from elenchus.probe import mechanism_judge as mechanism_judge_module
 from elenchus.probe.extractor import extract_constraints
 from elenchus.probe.ground_truth import compute_ground_truth
 from elenchus.probe.perturbation import generate_perturbations
@@ -88,6 +89,23 @@ async def compute_ground_truths_node(state: ProbeState) -> dict:
         logger.warning("no_symbolic_code_for_ground_truth")
         return {"ground_truths": []}
 
+    # Validate: symbolic answer must match consensus before trusting the code
+    try:
+        symbolic_answer = float(symbolic_result.answer)
+        consensus_answer = float(cr.consensus.answer)
+        rel_error = abs(symbolic_answer - consensus_answer) / max(abs(consensus_answer), 1e-10)
+        if rel_error > 1e-3:
+            logger.warning(
+                "symbolic_answer_disagrees_with_consensus",
+                symbolic=symbolic_answer,
+                consensus=consensus_answer,
+                rel_error=rel_error,
+            )
+            return {"ground_truths": []}
+    except (ValueError, TypeError):
+        logger.warning("ground_truth_validation_failed_non_numeric")
+        return {"ground_truths": []}
+
     ground_truths = []
     for perturbation in state["perturbations"]:
         result = await compute_ground_truth(symbolic_result.code, perturbation)
@@ -142,20 +160,30 @@ async def score_alignment_node(state: ProbeState) -> dict:
             except (ValueError, TypeError):
                 predicted = 0.0
 
+            mechanism_score = await mechanism_judge_module.judge_mechanism(
+                constraint_role=perturbation.constraint.role,
+                original_value=perturbation.constraint.original_value,
+                new_value=perturbation.new_value,
+                original_answer=original_answer,
+                actual_answer=actual,
+                predicted_reasoning=pred.get("predicted_reasoning", pred.get("mechanism", "")),
+            )
+
             score = compute_alignment_score(
                 predicted=predicted,
                 actual=actual,
                 original=original_answer,
+                mechanism_score=mechanism_score,
             )
 
             sensitivity_results.append(
                 SensitivityResult(
                     perturbation=perturbation,
                     predicted_answer=predicted,
-                    predicted_reasoning=pred.get("mechanism", ""),
+                    predicted_reasoning=pred.get("predicted_reasoning", pred.get("mechanism", "")),
                     actual_answer=actual,
                     alignment_score=score,
-                    reasoning_quality=0.5,
+                    reasoning_quality=mechanism_score,
                 )
             )
 

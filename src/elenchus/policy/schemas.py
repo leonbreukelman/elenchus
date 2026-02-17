@@ -32,7 +32,7 @@ class CouncilConfig(BaseModel):
     """Council phase configuration — strategies and consensus rules."""
 
     strategies: list[str] = Field(default_factory=lambda: ["algebraic", "numerical", "symbolic"])
-    consensus_tolerance_relative: float = 1e-6
+    consensus_tolerance_relative: float = 1e-3
     debate_rounds: int = 1
 
 

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
 from elenchus.council.algebraic import AlgebraicCouncilor
 from elenchus.council.base import BaseCouncilor
 from elenchus.state import CouncilorResult
@@ -80,3 +82,29 @@ class TestAlgebraicCouncilor:
         assert isinstance(result, dict)
         assert result["predicted_answer"] == 10.0
         assert "predicted_reasoning" in result
+
+
+@pytest.mark.asyncio
+async def test_algebraic_uses_calibrated_prompt_when_available(monkeypatch):
+    """When a calibration artifact exists, the councilor should use the DSPy program."""
+    from unittest.mock import MagicMock
+
+    from elenchus.calibration import loader as loader_module
+
+    mock_program = MagicMock()
+    mock_program.return_value = MagicMock(
+        answer=5.0,
+        reasoning="DSPy optimized algebraic reasoning",
+    )
+    monkeypatch.setattr(loader_module, "load_optimized_prompt", lambda s, m: mock_program)
+
+    import dspy
+
+    monkeypatch.setattr(dspy, "configure", lambda **kwargs: None)
+
+    councilor = AlgebraicCouncilor()
+    result = await councilor.solve("Solve for x: 3x + 7 = 22")
+
+    assert result.answer == 5.0
+    assert result.strategy == "algebraic"
+    mock_program.assert_called_once()

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
 from elenchus.council.base import BaseCouncilor
 from elenchus.council.numerical import NumericalCouncilor
 from elenchus.state import CouncilorResult
@@ -80,3 +82,31 @@ class TestNumericalCouncilor:
         assert isinstance(result, dict)
         assert result["predicted_answer"] == 48.0
         assert "predicted_reasoning" in result
+
+
+@pytest.mark.asyncio
+async def test_numerical_uses_calibrated_prompt_when_available(monkeypatch):
+    """When a calibration artifact exists, the councilor should use the DSPy program."""
+    from unittest.mock import MagicMock
+
+    from elenchus.calibration import loader as loader_module
+
+    # Mock DSPy program that returns a result
+    mock_program = MagicMock()
+    mock_program.return_value = MagicMock(
+        answer=42.0,
+        reasoning="DSPy optimized reasoning",
+    )
+    monkeypatch.setattr(loader_module, "load_optimized_prompt", lambda s, m: mock_program)
+
+    # Mock dspy.configure to avoid needing a real LM
+    import dspy
+
+    monkeypatch.setattr(dspy, "configure", lambda **kwargs: None)
+
+    councilor = NumericalCouncilor()
+    result = await councilor.solve("What is 6 * 7?")
+
+    assert result.answer == 42.0
+    assert result.strategy == "numerical"
+    mock_program.assert_called_once()
