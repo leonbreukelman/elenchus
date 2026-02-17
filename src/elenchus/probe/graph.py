@@ -10,9 +10,9 @@ from langgraph.graph import END, START, StateGraph
 from elenchus.council.algebraic import AlgebraicCouncilor
 from elenchus.council.numerical import NumericalCouncilor
 from elenchus.council.symbolic import SymbolicCouncilor
+from elenchus.probe import mechanism_judge as mechanism_judge_module
 from elenchus.probe.extractor import extract_constraints
 from elenchus.probe.ground_truth import compute_ground_truth
-from elenchus.probe.mechanism_judge import judge_mechanism
 from elenchus.probe.perturbation import generate_perturbations
 from elenchus.probe.predictor import collect_predictions
 from elenchus.probe.scorer import compute_alignment_score, compute_overall_verdict
@@ -160,7 +160,7 @@ async def score_alignment_node(state: ProbeState) -> dict:
             except (ValueError, TypeError):
                 predicted = 0.0
 
-            mechanism_score = await judge_mechanism(
+            mechanism_score = await mechanism_judge_module.judge_mechanism(
                 constraint_role=perturbation.constraint.role,
                 original_value=perturbation.constraint.original_value,
                 new_value=perturbation.new_value,
