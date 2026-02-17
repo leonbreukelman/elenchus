@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import random
 from typing import TypedDict
 
 import structlog
@@ -62,18 +61,12 @@ async def consensus_node(state: EngineState) -> dict:
 
 
 def should_probe(state: EngineState) -> str:
-    """Decide whether to run the Deutsch Probe."""
-    consensus = state["consensus"]
-    routing = state["routing"]
+    """Decide whether to run the Deutsch Probe.
 
-    if routing.complexity in ("simple", "low") and consensus.agreement == "unanimous":
-        return "skip_probe"
-
-    if consensus.agreement == "unanimous":
-        if random.random() < 0.30:
-            return "run_probe"
-        return "skip_probe"
-
+    Always runs the probe. Unanimous agreement doesn't mean the councilors
+    understand the problem — it means they converged on the same number.
+    The probe tests whether that convergence reflects genuine understanding.
+    """
     return "run_probe"
 
 
