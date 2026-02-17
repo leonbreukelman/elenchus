@@ -6,9 +6,18 @@ import random
 
 import structlog
 
-from elenchus.state import Constraint, Perturbation
+from elenchus.state import Constraint, ConstraintDtype, Perturbation
 
 logger = structlog.get_logger()
+
+
+def _coerce_to_dtype(value: float, constraint: Constraint) -> float | int:
+    """Round/clamp the perturbation value to match the constraint's dtype."""
+    if constraint.dtype == ConstraintDtype.INTEGER:
+        return int(round(value))
+    if constraint.dtype == ConstraintDtype.PROBABILITY:
+        return max(0.0, min(1.0, value))
+    return value
 
 
 def _moderate_shift(constraint: Constraint) -> float:
@@ -54,7 +63,7 @@ def generate_perturbations(
         perturbations.append(
             Perturbation(
                 constraint=c,
-                new_value=_moderate_shift(c),
+                new_value=_coerce_to_dtype(_moderate_shift(c), c),
                 rationale="Primary sensitivity test — moderate shift on central constraint",
             )
         )
@@ -64,7 +73,7 @@ def generate_perturbations(
         perturbations.append(
             Perturbation(
                 constraint=c,
-                new_value=_boundary_value(c),
+                new_value=_coerce_to_dtype(_boundary_value(c), c),
                 rationale="Boundary behavior test — errors amplify at extremes",
             )
         )
@@ -74,7 +83,7 @@ def generate_perturbations(
         perturbations.append(
             Perturbation(
                 constraint=c,
-                new_value=_subtle_shift(c),
+                new_value=_coerce_to_dtype(_subtle_shift(c), c),
                 rationale="Quantitative precision test — small shift tests magnitude accuracy",
             )
         )
