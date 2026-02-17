@@ -37,7 +37,7 @@ class TestSchemaDefaults:
     def test_council_defaults(self):
         cfg = CouncilConfig()
         assert cfg.strategies == ["algebraic", "numerical", "symbolic"]
-        assert cfg.consensus_tolerance_relative == pytest.approx(1e-6)
+        assert cfg.consensus_tolerance_relative == pytest.approx(1e-3)
         assert cfg.debate_rounds == 1
 
     def test_router_defaults(self):
