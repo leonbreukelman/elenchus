@@ -38,7 +38,7 @@ async def complete(
     messages: list[dict],
     *,
     system: str | None = None,
-    max_tokens: int = 1024,
+    max_tokens: int = 8192,
     num_retries: int = 3,
 ) -> LLMResponse:
     """Call an LLM and return a typed response.

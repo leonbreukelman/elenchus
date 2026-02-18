@@ -17,8 +17,8 @@ Elenchus supports OpenRouter for cost-effective benchmarking. Create a `.env` fi
 
 ```bash
 OPENROUTER_API_KEY=sk-or-v1-...
-ELENCHUS_MODEL_FAST=openrouter/google/gemini-2.0-flash-001
-ELENCHUS_MODEL_CAPABLE=openrouter/deepseek/deepseek-r1
+ELENCHUS_MODEL_FAST=openrouter/qwen/qwen3-32b
+ELENCHUS_MODEL_CAPABLE=openrouter/deepseek/deepseek-r1-0528
 ```
 
 ## Benchmarking

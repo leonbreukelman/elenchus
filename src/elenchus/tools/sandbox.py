@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 import textwrap
 
 import structlog
@@ -110,7 +111,7 @@ async def execute_code(
 
     try:
         proc = await asyncio.create_subprocess_exec(
-            "python",
+            sys.executable,
             "-c",
             script,
             stdout=asyncio.subprocess.PIPE,

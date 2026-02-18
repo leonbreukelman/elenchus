@@ -139,6 +139,10 @@ async def run_one_problem(
                     results.append(r)
 
             if not results:
+                # Log the specific error from the first failed councilor for debugging
+                for r in raw_results:
+                    if isinstance(r, Exception):
+                        print(f"Councilor failed: {r}", file=sys.stderr)
                 return ProbeProblemResult(
                     question=question[:80], category=category, source=source,
                     expected=expected, consensus_answer=None, agreement="none",
