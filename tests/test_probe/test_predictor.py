@@ -11,7 +11,7 @@ class MockCouncilor(BaseCouncilor):
     async def solve(self, problem):
         pass
 
-    async def predict(self, problem, original_answer, original_reasoning, constraint_role, original_value, new_value):
+    async def instruct(self, problem, original_answer, original_reasoning, constraint_role, original_value, new_value):
         return {
             "direction": "increase",
             "new_answer": original_answer * 1.5,

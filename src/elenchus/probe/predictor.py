@@ -1,4 +1,4 @@
-"""Phase 3: Collect councilor predictions for perturbations."""
+"""Phase 3: Collect councilor responses for perturbations."""
 
 from __future__ import annotations
 
@@ -18,8 +18,8 @@ async def _single_prediction(
     perturbation: Perturbation,
     problem: str,
 ) -> dict:
-    """Get one councilor's prediction for one perturbation."""
-    prediction = await councilor.predict(
+    """Get one councilor's response for one perturbation."""
+    prediction = await councilor.instruct(
         problem=problem,
         original_answer=councilor_result.answer,
         original_reasoning=councilor_result.reasoning,

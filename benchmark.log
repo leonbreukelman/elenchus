@@ -1,0 +1,642 @@
+nohup: ignoring input
+
+  ► Models: fast=openrouter/google/gemini-2.0-flash-001  capable=openrouter/deepseek/deepseek-r1
+  ► Running 85 problems through full pipeline (council + probe)
+  ► Concurrency=2, tolerance=0.01
+
+2026-02-17 21:34:45 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:34:45 [debug    ] algebraic.solve                problem='Pastor Paul prays 20 times per day, except on Sunday, when he prays twice as muc'
+2026-02-17 21:34:45 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:34:45 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:34:45 [debug    ] numerical.solve                problem='Pastor Paul prays 20 times per day, except on Sunday, when he prays twice as muc'
+2026-02-17 21:34:45 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:34:45 [debug    ] symbolic.solve                 problem='Pastor Paul prays 20 times per day, except on Sunday, when he prays twice as muc'
+2026-02-17 21:34:45 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:34:45 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:34:45 [debug    ] algebraic.solve                problem='A city has a population of 300,000.  50,000 people immigrate to the country and '
+2026-02-17 21:34:45 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:34:45 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:34:45 [debug    ] numerical.solve                problem='A city has a population of 300,000.  50,000 people immigrate to the country and '
+2026-02-17 21:34:45 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:34:45 [debug    ] symbolic.solve                 problem='A city has a population of 300,000.  50,000 people immigrate to the country and '
+2026-02-17 21:34:45 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:35:58 [debug    ] llm.response                   cost_usd=$0.007082 model=openrouter/deepseek/deepseek-r1 tokens=6268
+2026-02-17 21:35:58 [info     ] numerical.solved               answer=20 confidence=1.0
+2026-02-17 21:36:07 [debug    ] llm.response                   cost_usd=$0.007479 model=openrouter/deepseek/deepseek-r1 tokens=6424
+2026-02-17 21:36:07 [info     ] algebraic.solved               answer=20 confidence=1.0
+2026-02-17 21:36:28 [debug    ] llm.response                   cost_usd=$0.008726 model=openrouter/deepseek/deepseek-r1 tokens=6694
+2026-02-17 21:36:29 [debug    ] llm.response                   cost_usd=$0.009119 model=openrouter/deepseek/deepseek-r1 tokens=6916
+2026-02-17 21:36:29 [info     ] numerical.solved               answer=370000 confidence=1.0
+2026-02-17 21:36:40 [debug    ] llm.response                   cost_usd=$0.009641 model=openrouter/deepseek/deepseek-r1 tokens=7129
+2026-02-17 21:36:40 [debug    ] symbolic.executing_code        code_len=993
+2026-02-17 21:36:40 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:36:40 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:36:40 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:36:40 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:36:43 [debug    ] llm.response                   cost_usd=$0.000581 model=openrouter/google/gemini-2.0-flash-001 tokens=5081
+2026-02-17 21:36:43 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "initial_population",\n    "original_value": 300000,\n    "dtype": "numeric",\n    "role": "The initial population of the city.",\n    "perturbation_range": [\n      100000,\n      500000\n    ]\n  },\n  {\n    "name": "immigration",\n    "original_value": 50000,\n    "dtype": "numeric",\n    "role": "The number of people immigrating to the city.",\n    "perturbation_range": [\n      0,\n      100000\n    ]\n  },\n  {\n    "name": "emigration",\n    "original_value": 30000,\n    "dtype": "numeric",\n    "role": "The number of people emigrating from the city.",\n    "perturbation_range": [\n      0,\n      100000\n    ]\n  }\n]\n```'
+2026-02-17 21:36:43 [info     ] perturbations_generated        count=3
+2026-02-17 21:36:43 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:36:43 [debug    ] numerical.predict              constraint_role='The initial population of the city.' new_value=403246.52207172185
+2026-02-17 21:36:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:36:43 [debug    ] numerical.predict              constraint_role='The number of people immigrating to the city.' new_value=3984.4802456116336
+2026-02-17 21:36:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:36:43 [debug    ] numerical.predict              constraint_role='The number of people emigrating from the city.' new_value=28176.52434791936
+2026-02-17 21:36:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:36:43 [debug    ] symbolic.predict               constraint_role='The initial population of the city.' new_value=403246.52207172185
+2026-02-17 21:36:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:36:43 [debug    ] symbolic.predict               constraint_role='The number of people immigrating to the city.' new_value=3984.4802456116336
+2026-02-17 21:36:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:36:43 [debug    ] symbolic.predict               constraint_role='The number of people emigrating from the city.' new_value=28176.52434791936
+2026-02-17 21:36:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:17 [debug    ] llm.response                   cost_usd=$0.011803 model=openrouter/deepseek/deepseek-r1 tokens=8290
+2026-02-17 21:37:17 [debug    ] symbolic.executing_code        code_len=429
+2026-02-17 21:37:17 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:37:17 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:37:17 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:37:17 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:37:20 [debug    ] llm.response                   cost_usd=$0.000474 model=openrouter/google/gemini-2.0-flash-001 tokens=4075
+2026-02-17 21:37:20 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "paul_non_sunday",\n    "original_value": 20,\n    "dtype": "numeric",\n    "role": "Number of times Pastor Paul prays on a non-Sunday.",\n    "perturbation_range": [\n      1,\n      100\n    ]\n  },\n  {\n    "name": "non_sunday_days",\n    "original_value": 6,\n    "dtype": "numeric",\n    "role": "Number of non-Sunday days in a week.",\n    "perturbation_range": [\n      0,\n      7\n    ]\n  },\n  {\n    "name": "sunday_days",\n    "original_value": 1,\n    "dtype": "numeric",\n    "role": "Number of Sunday days in a week.",\n    "perturbation_range": [\n      0,\n      7\n    ]\n  }\n]\n```'
+2026-02-17 21:37:20 [info     ] perturbations_generated        count=3
+2026-02-17 21:37:20 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:37:20 [debug    ] algebraic.predict              constraint_role='Number of times Pastor Paul prays on a non-Sunday.' new_value=10.914134144476106
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] algebraic.predict              constraint_role='Number of non-Sunday days in a week.' new_value=6.974642531450908
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] algebraic.predict              constraint_role='Number of Sunday days in a week.' new_value=1.0557369385135544
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] numerical.predict              constraint_role='Number of times Pastor Paul prays on a non-Sunday.' new_value=10.914134144476106
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] numerical.predict              constraint_role='Number of non-Sunday days in a week.' new_value=6.974642531450908
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] numerical.predict              constraint_role='Number of Sunday days in a week.' new_value=1.0557369385135544
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] symbolic.predict               constraint_role='Number of times Pastor Paul prays on a non-Sunday.' new_value=10.914134144476106
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] symbolic.predict               constraint_role='Number of non-Sunday days in a week.' new_value=6.974642531450908
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:20 [debug    ] symbolic.predict               constraint_role='Number of Sunday days in a week.' new_value=1.0557369385135544
+2026-02-17 21:37:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:37:57 [debug    ] llm.response                   cost_usd=$0.007355 model=openrouter/deepseek/deepseek-r1 tokens=6804
+2026-02-17 21:37:58 [debug    ] llm.response                   cost_usd=$0.007020 model=openrouter/deepseek/deepseek-r1 tokens=6039
+2026-02-17 21:38:07 [debug    ] llm.response                   cost_usd=$0.007528 model=openrouter/deepseek/deepseek-r1 tokens=6209
+2026-02-17 21:38:09 [debug    ] llm.response                   cost_usd=$0.007657 model=openrouter/deepseek/deepseek-r1 tokens=5907
+2026-02-17 21:38:14 [debug    ] llm.response                   cost_usd=$0.008695 model=openrouter/deepseek/deepseek-r1 tokens=7460
+2026-02-17 21:38:22 [debug    ] llm.response                   cost_usd=$0.006397 model=openrouter/deepseek/deepseek-r1 tokens=6317
+2026-02-17 21:38:53 [debug    ] llm.response                   cost_usd=$0.008642 model=openrouter/deepseek/deepseek-r1 tokens=6935
+2026-02-17 21:39:01 [debug    ] llm.response                   cost_usd=$0.009418 model=openrouter/deepseek/deepseek-r1 tokens=7346
+2026-02-17 21:39:04 [debug    ] llm.response                   cost_usd=$0.009258 model=openrouter/deepseek/deepseek-r1 tokens=7348
+2026-02-17 21:39:10 [debug    ] llm.response                   cost_usd=$0.009871 model=openrouter/deepseek/deepseek-r1 tokens=7639
+2026-02-17 21:39:14 [debug    ] llm.response                   cost_usd=$0.010087 model=openrouter/deepseek/deepseek-r1 tokens=7486
+2026-02-17 21:39:14 [debug    ] llm.response                   cost_usd=$0.010068 model=openrouter/deepseek/deepseek-r1 tokens=7386
+2026-02-17 21:39:22 [debug    ] llm.response                   cost_usd=$0.010679 model=openrouter/deepseek/deepseek-r1 tokens=7722
+2026-02-17 21:39:24 [debug    ] llm.response                   cost_usd=$0.013258 model=openrouter/deepseek/deepseek-r1 tokens=9500
+2026-02-17 21:39:24 [info     ] predictions_collected          count=6
+2026-02-17 21:39:24 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:39:24 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:39:24 [debug    ] algebraic.solve                problem='Zach baked cookies for a bake sale. On Monday he baked 32 cookies. On Tuesday he'
+2026-02-17 21:39:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:39:24 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:39:24 [debug    ] numerical.solve                problem='Zach baked cookies for a bake sale. On Monday he baked 32 cookies. On Tuesday he'
+2026-02-17 21:39:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:39:24 [debug    ] symbolic.solve                 problem='Zach baked cookies for a bake sale. On Monday he baked 32 cookies. On Tuesday he'
+2026-02-17 21:39:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:39:40 [debug    ] llm.response                   cost_usd=$0.003008 model=openrouter/deepseek/deepseek-r1 tokens=4300
+2026-02-17 21:39:40 [debug    ] symbolic.executing_code        code_len=361
+2026-02-17 21:39:40 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:39:40 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:39:40 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:39:49 [debug    ] llm.response                   cost_usd=$0.011845 model=openrouter/deepseek/deepseek-r1 tokens=8372
+2026-02-17 21:39:49 [info     ] predictions_collected          count=9
+2026-02-17 21:39:49 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:39:49 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:39:49 [debug    ] algebraic.solve                problem='Benny is baking pies for a bake sale. He plans to make ten pumpkin pies, which c'
+2026-02-17 21:39:49 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:39:49 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:39:49 [debug    ] numerical.solve                problem='Benny is baking pies for a bake sale. He plans to make ten pumpkin pies, which c'
+2026-02-17 21:39:49 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:39:49 [debug    ] symbolic.solve                 problem='Benny is baking pies for a bake sale. He plans to make ten pumpkin pies, which c'
+2026-02-17 21:39:49 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:40:05 [debug    ] llm.response                   cost_usd=$0.003528 model=openrouter/deepseek/deepseek-r1 tokens=4881
+2026-02-17 21:40:05 [debug    ] symbolic.executing_code        code_len=339
+2026-02-17 21:40:05 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:40:05 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:40:05 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:40:24 [debug    ] llm.response                   cost_usd=$0.004423 model=openrouter/deepseek/deepseek-r1 tokens=5122
+2026-02-17 21:40:24 [info     ] algebraic.solved               answer=5 confidence=1.0
+2026-02-17 21:40:44 [debug    ] llm.response                   cost_usd=$0.007515 model=openrouter/deepseek/deepseek-r1 tokens=6755
+2026-02-17 21:40:44 [info     ] numerical.solved               answer=92 confidence=1.0
+2026-02-17 21:41:23 [debug    ] llm.response                   cost_usd=$0.008051 model=openrouter/deepseek/deepseek-r1 tokens=6799
+2026-02-17 21:41:23 [info     ] numerical.solved               answer=5 confidence=1.0
+2026-02-17 21:41:23 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:41:26 [debug    ] llm.response                   cost_usd=$0.000626 model=openrouter/google/gemini-2.0-flash-001 tokens=5220
+2026-02-17 21:41:26 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "pumpkin_pies",\n    "original_value": 10,\n    "dtype": "numeric",\n    "role": "Number of pumpkin pies",\n    "perturbation_range": [\n      1,\n      100\n    ]\n  },\n  {\n    "name": "cherry_pies",\n    "original_value": 12,\n    "dtype": "numeric",\n    "role": "Number of cherry pies",\n    "perturbation_range": [\n      1,\n      100\n    ]\n  },\n  {\n    "name": "cost_pumpkin",\n    "original_value": 3,\n    "dtype": "numeric",\n    "role": "Cost to make one pumpkin pie",\n    "perturbation_range": [\n      0.1,\n      10\n    ]\n  },\n  {\n    "name": "cost_cherry",\n    "original_value": 5,\n    "dtype": "numeric",\n    "role": "Cost to make one cherry pie",\n    "perturbation_range": [\n      0.1,\n      10\n    ]\n  },\n  {\n    "name": "required_profit",\n    "original_value": 20,\n    "dtype": "numeric",\n    "role": "Desired total profit",\n    "perturbation_range": [\n      0,\n      100\n    ]\n  }\n]\n```'
+2026-02-17 21:41:26 [info     ] perturbations_generated        count=3
+2026-02-17 21:41:26 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:41:26 [debug    ] algebraic.predict              constraint_role='Number of pumpkin pies' new_value=13.925587901047692
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] algebraic.predict              constraint_role='Number of cherry pies' new_value=3.8057619260744895
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] algebraic.predict              constraint_role='Cost to make one pumpkin pie' new_value=2.80682112000688
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] numerical.predict              constraint_role='Number of pumpkin pies' new_value=13.925587901047692
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] numerical.predict              constraint_role='Number of cherry pies' new_value=3.8057619260744895
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] numerical.predict              constraint_role='Cost to make one pumpkin pie' new_value=2.80682112000688
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] symbolic.predict               constraint_role='Number of pumpkin pies' new_value=13.925587901047692
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] symbolic.predict               constraint_role='Number of cherry pies' new_value=3.8057619260744895
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:26 [debug    ] symbolic.predict               constraint_role='Cost to make one pumpkin pie' new_value=2.80682112000688
+2026-02-17 21:41:26 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:32 [debug    ] llm.response                   cost_usd=$0.010498 model=openrouter/deepseek/deepseek-r1 tokens=8069
+2026-02-17 21:41:32 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:41:35 [debug    ] llm.response                   cost_usd=$0.000607 model=openrouter/google/gemini-2.0-flash-001 tokens=5165
+2026-02-17 21:41:35 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "monday_cookies",\n    "original_value": 32,\n    "dtype": "numeric",\n    "role": "The number of cookies Zach baked on Monday.",\n    "perturbation_range": [\n      0,\n      100\n    ]\n  },\n  {\n    "name": "4",\n    "original_value": 4,\n    "dtype": "numeric",\n    "role": "The number of cookies Zach\'s brother ate on Wednesday.",\n    "perturbation_range": [\n      0,\n      20\n    ]\n  },\n  {\n    "name": "2",\n    "original_value": 2,\n    "dtype": "numeric",\n    "role": "The denominator used to calculate Tuesday\'s cookies baked (half of Monday\'s).",\n    "perturbation_range": [\n      1,\n      5\n    ]\n  },\n    {\n    "name": "3",\n    "original_value": 3,\n    "dtype": "numeric",\n    "role": "The multiplier to calculate the amount of cookies baked on Wednesday (three times Tuesday\'s cookies).",\n    "perturbation_range": [\n      1,\n      5\n    ]\n  }\n]\n```'
+2026-02-17 21:41:35 [info     ] perturbations_generated        count=3
+2026-02-17 21:41:35 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:41:35 [debug    ] numerical.predict              constraint_role='The number of cookies Zach baked on Monday.' new_value=17.362437654237944
+2026-02-17 21:41:35 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:35 [debug    ] numerical.predict              constraint_role="The number of cookies Zach's brother ate on Wednesday." new_value=0.1100265762630308
+2026-02-17 21:41:35 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:35 [debug    ] numerical.predict              constraint_role="The denominator used to calculate Tuesday's cookies baked (half of Monday's)." new_value=2.1555872595592325
+2026-02-17 21:41:35 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:35 [debug    ] symbolic.predict               constraint_role='The number of cookies Zach baked on Monday.' new_value=17.362437654237944
+2026-02-17 21:41:35 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:35 [debug    ] symbolic.predict               constraint_role="The number of cookies Zach's brother ate on Wednesday." new_value=0.1100265762630308
+2026-02-17 21:41:35 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:35 [debug    ] symbolic.predict               constraint_role="The denominator used to calculate Tuesday's cookies baked (half of Monday's)." new_value=2.1555872595592325
+2026-02-17 21:41:35 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:41:59 [debug    ] llm.response                   cost_usd=$0.004920 model=openrouter/deepseek/deepseek-r1 tokens=5549
+2026-02-17 21:42:08 [debug    ] llm.response                   cost_usd=$0.005296 model=openrouter/deepseek/deepseek-r1 tokens=5910
+2026-02-17 21:42:21 [debug    ] llm.response                   cost_usd=$0.005436 model=openrouter/deepseek/deepseek-r1 tokens=5920
+2026-02-17 21:42:25 [debug    ] llm.response                   cost_usd=$0.005541 model=openrouter/deepseek/deepseek-r1 tokens=5051
+2026-02-17 21:42:30 [debug    ] llm.response                   cost_usd=$0.006002 model=openrouter/deepseek/deepseek-r1 tokens=6175
+2026-02-17 21:42:32 [debug    ] llm.response                   cost_usd=$0.006123 model=openrouter/deepseek/deepseek-r1 tokens=5348
+2026-02-17 21:42:36 [debug    ] llm.response                   cost_usd=$0.006316 model=openrouter/deepseek/deepseek-r1 tokens=6420
+2026-02-17 21:43:21 [debug    ] llm.response                   cost_usd=$0.009267 model=openrouter/deepseek/deepseek-r1 tokens=7472
+2026-02-17 21:43:25 [debug    ] llm.response                   cost_usd=$0.010559 model=openrouter/deepseek/deepseek-r1 tokens=8372
+2026-02-17 21:45:17 [debug    ] llm.response                   cost_usd=$0.017702 model=openrouter/deepseek/deepseek-r1 tokens=11072
+2026-02-17 21:45:31 [debug    ] llm.response                   cost_usd=$0.018290 model=openrouter/deepseek/deepseek-r1 tokens=11670
+2026-02-17 21:45:31 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:45:31 [debug    ] algebraic.solve                problem='James decides to go to prom with Susan.  He pays for everything.  The tickets co'
+2026-02-17 21:45:31 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:45:31 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:45:31 [debug    ] numerical.solve                problem='James decides to go to prom with Susan.  He pays for everything.  The tickets co'
+2026-02-17 21:45:31 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:45:31 [debug    ] symbolic.solve                 problem='James decides to go to prom with Susan.  He pays for everything.  The tickets co'
+2026-02-17 21:45:31 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:45:40 [debug    ] llm.response                   cost_usd=$0.019289 model=openrouter/deepseek/deepseek-r1 tokens=11720
+2026-02-17 21:45:43 [debug    ] llm.response                   cost_usd=$0.020053 model=openrouter/deepseek/deepseek-r1 tokens=12516
+2026-02-17 21:45:43 [debug    ] llm.response                   cost_usd=$0.019266 model=openrouter/deepseek/deepseek-r1 tokens=11949
+2026-02-17 21:45:43 [info     ] predictions_collected          count=9
+2026-02-17 21:45:43 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:45:43 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:45:43 [debug    ] algebraic.solve                problem='Adam had a farm with animals. He had 12 cows and twice as many sheep. He decided'
+2026-02-17 21:45:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:45:43 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:45:43 [debug    ] numerical.solve                problem='Adam had a farm with animals. He had 12 cows and twice as many sheep. He decided'
+2026-02-17 21:45:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:45:43 [debug    ] symbolic.solve                 problem='Adam had a farm with animals. He had 12 cows and twice as many sheep. He decided'
+2026-02-17 21:45:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:45:47 [debug    ] llm.response                   cost_usd=$0.003535 model=openrouter/deepseek/deepseek-r1 tokens=4540
+2026-02-17 21:45:47 [debug    ] symbolic.executing_code        code_len=410
+2026-02-17 21:45:47 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:45:47 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:45:47 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:46:00 [debug    ] llm.response                   cost_usd=$0.002720 model=openrouter/deepseek/deepseek-r1 tokens=3628
+2026-02-17 21:46:00 [debug    ] symbolic.executing_code        code_len=311
+2026-02-17 21:46:00 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:46:00 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:46:00 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:46:04 [debug    ] llm.response                   cost_usd=$0.004436 model=openrouter/deepseek/deepseek-r1 tokens=5259
+2026-02-17 21:46:04 [info     ] numerical.solved               answer=836 confidence=1.0
+2026-02-17 21:46:19 [debug    ] llm.response                   cost_usd=$0.004280 model=openrouter/deepseek/deepseek-r1 tokens=4665
+2026-02-17 21:46:19 [info     ] numerical.solved               answer=108 confidence=1.0
+2026-02-17 21:46:39 [debug    ] llm.response                   cost_usd=$0.006623 model=openrouter/deepseek/deepseek-r1 tokens=5953
+2026-02-17 21:46:39 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:46:43 [debug    ] llm.response                   cost_usd=$0.000562 model=openrouter/google/gemini-2.0-flash-001 tokens=4316
+2026-02-17 21:46:43 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "ticket_price",\n    "original_value": 100,\n    "dtype": "numeric",\n    "role": "The price of a single prom ticket.",\n    "perturbation_range": [\n      50,\n      200\n    ]\n  },\n  {\n    "name": "num_tickets",\n    "original_value": 2,\n    "dtype": "numeric",\n    "role": "The number of prom tickets purchased.",\n    "perturbation_range": [\n      1,\n      4\n    ]\n  },\n  {\n    "name": "dinner_before_tip",\n    "original_value": 120,\n    "dtype": "numeric",\n    "role": "The cost of dinner before the tip.",\n    "perturbation_range": [\n      50,\n      250\n    ]\n  },\n  {\n    "name": "tip_percent",\n    "original_value": 0.30,\n    "dtype": "numeric",\n    "role": "The percentage of the tip.",\n    "perturbation_range": [\n      0.15,\n      0.40\n    ]\n  },\n  {\n    "name": "limo_rate",\n    "original_value": 80,\n    "dtype": "numeric",\n    "role": "The hourly rate for the limousine.",\n    "perturbation_range": [\n      50,\n      150\n    ]\n  },\n  {\n    "name": "limo_hours",\n    "original_value": 6,\n    "dtype": "numeric",\n    "role": "The number of hours the limousine was chartered for.",\n    "perturbation_range": [\n      2,\n      10\n    ]\n  }\n]\n```'
+2026-02-17 21:46:43 [info     ] perturbations_generated        count=3
+2026-02-17 21:46:43 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:46:43 [debug    ] numerical.predict              constraint_role='The price of a single prom ticket.' new_value=69.89792082094355
+2026-02-17 21:46:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:46:43 [debug    ] numerical.predict              constraint_role='The number of prom tickets purchased.' new_value=1.0506270546894512
+2026-02-17 21:46:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:46:43 [debug    ] numerical.predict              constraint_role='The cost of dinner before the tip.' new_value=127.67304344051277
+2026-02-17 21:46:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:46:43 [debug    ] symbolic.predict               constraint_role='The price of a single prom ticket.' new_value=69.89792082094355
+2026-02-17 21:46:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:46:43 [debug    ] symbolic.predict               constraint_role='The number of prom tickets purchased.' new_value=1.0506270546894512
+2026-02-17 21:46:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:46:43 [debug    ] symbolic.predict               constraint_role='The cost of dinner before the tip.' new_value=127.67304344051277
+2026-02-17 21:46:43 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:46:55 [debug    ] llm.response                   cost_usd=$0.006947 model=openrouter/deepseek/deepseek-r1 tokens=6288
+2026-02-17 21:46:55 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:46:57 [debug    ] llm.response                   cost_usd=$0.000453 model=openrouter/google/gemini-2.0-flash-001 tokens=4296
+2026-02-17 21:46:57 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "cows",\n    "original_value": 12,\n    "dtype": "numeric",\n    "role": "Initial number of cows on the farm",\n    "perturbation_range": [\n      0,\n      100\n    ]\n  }\n]\n```'
+2026-02-17 21:46:57 [info     ] perturbations_generated        count=1
+2026-02-17 21:46:57 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:46:57 [debug    ] numerical.predict              constraint_role='Initial number of cows on the farm' new_value=17.718493867171098
+2026-02-17 21:46:57 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:46:57 [debug    ] symbolic.predict               constraint_role='Initial number of cows on the farm' new_value=17.718493867171098
+2026-02-17 21:46:57 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:47:28 [debug    ] llm.response                   cost_usd=$0.025489 model=openrouter/deepseek/deepseek-r1 tokens=14644
+2026-02-17 21:47:51 [debug    ] llm.response                   cost_usd=$0.006727 model=openrouter/deepseek/deepseek-r1 tokens=6231
+2026-02-17 21:47:54 [debug    ] llm.response                   cost_usd=$0.006890 model=openrouter/deepseek/deepseek-r1 tokens=6304
+2026-02-17 21:47:57 [debug    ] llm.response                   cost_usd=$0.005756 model=openrouter/deepseek/deepseek-r1 tokens=5390
+2026-02-17 21:47:59 [debug    ] llm.response                   cost_usd=$0.007171 model=openrouter/deepseek/deepseek-r1 tokens=6373
+2026-02-17 21:48:28 [debug    ] llm.response                   cost_usd=$0.007929 model=openrouter/deepseek/deepseek-r1 tokens=6536
+2026-02-17 21:48:28 [info     ] predictions_collected          count=2
+2026-02-17 21:48:28 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:48:28 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:48:28 [debug    ] algebraic.solve                problem='John trains for ultramarathons.  He starts only able to run 8 hours straight but'
+2026-02-17 21:48:28 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:48:28 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:48:28 [debug    ] numerical.solve                problem='John trains for ultramarathons.  He starts only able to run 8 hours straight but'
+2026-02-17 21:48:28 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:48:28 [debug    ] symbolic.solve                 problem='John trains for ultramarathons.  He starts only able to run 8 hours straight but'
+2026-02-17 21:48:28 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:48:32 [debug    ] llm.response                   cost_usd=$0.009374 model=openrouter/deepseek/deepseek-r1 tokens=7498
+2026-02-17 21:48:43 [debug    ] llm.response                   cost_usd=$0.003323 model=openrouter/deepseek/deepseek-r1 tokens=4536
+2026-02-17 21:48:43 [info     ] algebraic.solved               answer=168 confidence=1.0
+2026-02-17 21:48:48 [debug    ] llm.response                   cost_usd=$0.003081 model=openrouter/deepseek/deepseek-r1 tokens=4018
+2026-02-17 21:48:48 [debug    ] symbolic.executing_code        code_len=474
+2026-02-17 21:48:48 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:48:48 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:48:48 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:48:55 [debug    ] llm.response                   cost_usd=$0.011167 model=openrouter/deepseek/deepseek-r1 tokens=8526
+2026-02-17 21:48:56 [debug    ] llm.response                   cost_usd=$0.010375 model=openrouter/deepseek/deepseek-r1 tokens=7366
+2026-02-17 21:48:56 [info     ] predictions_collected          count=6
+2026-02-17 21:48:56 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:48:56 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:48:56 [debug    ] algebraic.solve                problem='The seats of a bus are arranged in 23 rows of 4 seats. At the start, 16 people c'
+2026-02-17 21:48:56 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:48:56 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:48:56 [debug    ] numerical.solve                problem='The seats of a bus are arranged in 23 rows of 4 seats. At the start, 16 people c'
+2026-02-17 21:48:56 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:48:56 [debug    ] symbolic.solve                 problem='The seats of a bus are arranged in 23 rows of 4 seats. At the start, 16 people c'
+2026-02-17 21:48:56 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:12 [debug    ] llm.response                   cost_usd=$0.003306 model=openrouter/deepseek/deepseek-r1 tokens=4725
+2026-02-17 21:49:12 [debug    ] symbolic.executing_code        code_len=269
+2026-02-17 21:49:12 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:49:12 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:49:12 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:49:15 [debug    ] llm.response                   cost_usd=$0.003727 model=openrouter/deepseek/deepseek-r1 tokens=5128
+2026-02-17 21:49:15 [info     ] numerical.solved               answer=57 confidence=1.0
+2026-02-17 21:49:17 [debug    ] llm.response                   cost_usd=$0.003862 model=openrouter/deepseek/deepseek-r1 tokens=5164
+2026-02-17 21:49:17 [info     ] algebraic.solved               answer=57 confidence=1.0
+2026-02-17 21:49:17 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:49:20 [debug    ] llm.response                   cost_usd=$0.000505 model=openrouter/google/gemini-2.0-flash-001 tokens=4811
+2026-02-17 21:49:20 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "initial_passengers",\n    "original_value": 16,\n    "dtype": "numeric",\n    "role": "The initial number of passengers on the bus.",\n    "perturbation_range": [\n      0,\n      92\n    ]\n  }\n]\n```'
+2026-02-17 21:49:20 [info     ] perturbations_generated        count=1
+2026-02-17 21:49:20 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:49:20 [debug    ] algebraic.predict              constraint_role='The initial number of passengers on the bus.' new_value=9.206575662134389
+2026-02-17 21:49:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:20 [debug    ] numerical.predict              constraint_role='The initial number of passengers on the bus.' new_value=9.206575662134389
+2026-02-17 21:49:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:20 [debug    ] symbolic.predict               constraint_role='The initial number of passengers on the bus.' new_value=9.206575662134389
+2026-02-17 21:49:20 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:22 [debug    ] llm.response                   cost_usd=$0.005690 model=openrouter/deepseek/deepseek-r1 tokens=5426
+2026-02-17 21:49:22 [info     ] numerical.solved               answer=168 confidence=1.0
+2026-02-17 21:49:22 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:49:25 [debug    ] llm.response                   cost_usd=$0.000520 model=openrouter/google/gemini-2.0-flash-001 tokens=4343
+2026-02-17 21:49:25 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "original_time",\n    "original_value": 8,\n    "dtype": "numeric",\n    "role": "The initial amount of time John can run.",\n    "perturbation_range": [\n      1,\n      24\n    ]\n  },\n  {\n    "name": "increase_percent",\n    "original_value": 75,\n    "dtype": "numeric",\n    "role": "The percentage increase in the amount of time John can run.",\n    "perturbation_range": [\n      0,\n      100\n    ]\n  },\n  {\n    "name": "original_speed",\n    "original_value": 8,\n    "dtype": "numeric",\n    "role": "The initial speed John runs.",\n    "perturbation_range": [\n      1,\n      20\n    ]\n  },\n  {\n    "name": "speed_increase",\n    "original_value": 4,\n    "dtype": "numeric",\n    "role": "The increase in John\'s speed.",\n    "perturbation_range": [\n      0,\n      10\n    ]\n  }\n]\n```'
+2026-02-17 21:49:25 [info     ] perturbations_generated        count=3
+2026-02-17 21:49:25 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:49:25 [debug    ] algebraic.predict              constraint_role='The initial amount of time John can run.' new_value=10.42788996641967
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] algebraic.predict              constraint_role='The percentage increase in the amount of time John can run.' new_value=5.6287070863201665
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] algebraic.predict              constraint_role='The initial speed John runs.' new_value=7.305135572823267
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] numerical.predict              constraint_role='The initial amount of time John can run.' new_value=10.42788996641967
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] numerical.predict              constraint_role='The percentage increase in the amount of time John can run.' new_value=5.6287070863201665
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] numerical.predict              constraint_role='The initial speed John runs.' new_value=7.305135572823267
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] symbolic.predict               constraint_role='The initial amount of time John can run.' new_value=10.42788996641967
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] symbolic.predict               constraint_role='The percentage increase in the amount of time John can run.' new_value=5.6287070863201665
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:49:25 [debug    ] symbolic.predict               constraint_role='The initial speed John runs.' new_value=7.305135572823267
+2026-02-17 21:49:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:50:07 [debug    ] llm.response                   cost_usd=$0.005108 model=openrouter/deepseek/deepseek-r1 tokens=5709
+2026-02-17 21:50:13 [debug    ] llm.response                   cost_usd=$0.006028 model=openrouter/deepseek/deepseek-r1 tokens=6249
+2026-02-17 21:50:21 [debug    ] llm.response                   cost_usd=$0.005975 model=openrouter/deepseek/deepseek-r1 tokens=6274
+2026-02-17 21:50:24 [debug    ] llm.response                   cost_usd=$0.006149 model=openrouter/deepseek/deepseek-r1 tokens=5896
+2026-02-17 21:50:57 [debug    ] llm.response                   cost_usd=$0.008133 model=openrouter/deepseek/deepseek-r1 tokens=6537
+2026-02-17 21:51:08 [debug    ] llm.response                   cost_usd=$0.009616 model=openrouter/deepseek/deepseek-r1 tokens=7626
+2026-02-17 21:51:13 [debug    ] llm.response                   cost_usd=$0.009455 model=openrouter/deepseek/deepseek-r1 tokens=7425
+2026-02-17 21:51:17 [debug    ] llm.response                   cost_usd=$0.009916 model=openrouter/deepseek/deepseek-r1 tokens=7896
+2026-02-17 21:51:21 [debug    ] llm.response                   cost_usd=$0.009937 model=openrouter/deepseek/deepseek-r1 tokens=7472
+2026-02-17 21:51:21 [info     ] predictions_collected          count=3
+2026-02-17 21:51:21 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:51:21 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:51:21 [debug    ] algebraic.solve                problem='Of 96 oranges, half were ripe. If 1/4 of the ripe oranges were eaten and 1/8 of '
+2026-02-17 21:51:21 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:51:21 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:51:21 [debug    ] numerical.solve                problem='Of 96 oranges, half were ripe. If 1/4 of the ripe oranges were eaten and 1/8 of '
+2026-02-17 21:51:21 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:51:21 [debug    ] symbolic.solve                 problem='Of 96 oranges, half were ripe. If 1/4 of the ripe oranges were eaten and 1/8 of '
+2026-02-17 21:51:21 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:51:27 [debug    ] llm.response                   cost_usd=$0.010242 model=openrouter/deepseek/deepseek-r1 tokens=7551
+2026-02-17 21:51:29 [debug    ] llm.response                   cost_usd=$0.010566 model=openrouter/deepseek/deepseek-r1 tokens=8020
+2026-02-17 21:51:30 [debug    ] llm.response                   cost_usd=$0.010738 model=openrouter/deepseek/deepseek-r1 tokens=8040
+2026-02-17 21:51:30 [info     ] predictions_collected          count=9
+2026-02-17 21:51:30 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:51:30 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:51:30 [debug    ] algebraic.solve                problem='Each frog needs to eat 30 flies per day to live. Each fish needs to eat 8 frogs '
+2026-02-17 21:51:30 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:51:30 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:51:30 [debug    ] numerical.solve                problem='Each frog needs to eat 30 flies per day to live. Each fish needs to eat 8 frogs '
+2026-02-17 21:51:30 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:51:30 [debug    ] symbolic.solve                 problem='Each frog needs to eat 30 flies per day to live. Each fish needs to eat 8 frogs '
+2026-02-17 21:51:30 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:52:11 [debug    ] llm.response                   cost_usd=$0.004974 model=openrouter/deepseek/deepseek-r1 tokens=5647
+2026-02-17 21:52:11 [debug    ] symbolic.executing_code        code_len=219
+2026-02-17 21:52:11 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:52:11 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:52:11 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:52:49 [debug    ] llm.response                   cost_usd=$0.007704 model=openrouter/deepseek/deepseek-r1 tokens=6159
+2026-02-17 21:52:49 [info     ] algebraic.solved               answer=18 confidence=0.95
+2026-02-17 21:52:54 [debug    ] llm.response                   cost_usd=$0.007653 model=openrouter/deepseek/deepseek-r1 tokens=6016
+2026-02-17 21:52:54 [info     ] numerical.solved               answer=18 confidence=0.9
+2026-02-17 21:53:36 [debug    ] llm.response                   cost_usd=$0.010096 model=openrouter/deepseek/deepseek-r1 tokens=7499
+2026-02-17 21:53:36 [info     ] numerical.solved               answer=32400 confidence=1.0
+2026-02-17 21:53:47 [debug    ] llm.response                   cost_usd=$0.011591 model=openrouter/deepseek/deepseek-r1 tokens=7958
+2026-02-17 21:53:47 [debug    ] symbolic.executing_code        code_len=233
+2026-02-17 21:53:47 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:53:47 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:53:47 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:53:47 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:53:50 [debug    ] llm.response                   cost_usd=$0.000255 model=openrouter/google/gemini-2.0-flash-001 tokens=2332
+2026-02-17 21:53:50 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "total",\n    "original_value": 96,\n    "dtype": "numeric",\n    "role": "The total number of oranges",\n    "perturbation_range": [\n      1,\n      200\n    ]\n  }\n]\n```'
+2026-02-17 21:53:50 [info     ] perturbations_generated        count=1
+2026-02-17 21:53:50 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:53:50 [debug    ] algebraic.predict              constraint_role='The total number of oranges' new_value=125.64789122974616
+2026-02-17 21:53:50 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:53:50 [debug    ] numerical.predict              constraint_role='The total number of oranges' new_value=125.64789122974616
+2026-02-17 21:53:50 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:53:50 [debug    ] symbolic.predict               constraint_role='The total number of oranges' new_value=125.64789122974616
+2026-02-17 21:53:50 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:22 [debug    ] llm.response                   cost_usd=$0.012917 model=openrouter/deepseek/deepseek-r1 tokens=8364
+2026-02-17 21:54:22 [info     ] algebraic.solved               answer=32400 confidence=1.0
+2026-02-17 21:54:22 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:54:25 [debug    ] llm.response                   cost_usd=$0.000571 model=openrouter/google/gemini-2.0-flash-001 tokens=4820
+2026-02-17 21:54:25 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "gharials",\n    "original_value": 9,\n    "dtype": "numeric",\n    "role": "Number of gharials in the swamp",\n    "perturbation_range": [\n      1,\n      100\n    ]\n  },\n  {\n    "name": "fish_per_gharial",\n    "original_value": 15,\n    "dtype": "numeric",\n    "role": "Number of fish each gharial eats per day",\n    "perturbation_range": [\n      1,\n      50\n    ]\n  },\n  {\n    "name": "frogs_per_fish",\n    "original_value": 8,\n    "dtype": "numeric",\n    "role": "Number of frogs each fish eats per day",\n    "perturbation_range": [\n      1,\n      50\n    ]\n  },\n  {\n    "name": "flies_per_frog",\n    "original_value": 30,\n    "dtype": "numeric",\n    "role": "Number of flies each frog eats per day",\n    "perturbation_range": [\n      1,\n      100\n    ]\n  }\n]\n```'
+2026-02-17 21:54:25 [info     ] perturbations_generated        count=3
+2026-02-17 21:54:25 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:54:25 [debug    ] algebraic.predict              constraint_role='Number of gharials in the swamp' new_value=13.013845953328975
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] algebraic.predict              constraint_role='Number of fish each gharial eats per day' new_value=4.385496861797019
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] algebraic.predict              constraint_role='Number of frogs each fish eats per day' new_value=7.261148992340276
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] numerical.predict              constraint_role='Number of gharials in the swamp' new_value=13.013845953328975
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] numerical.predict              constraint_role='Number of fish each gharial eats per day' new_value=4.385496861797019
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] numerical.predict              constraint_role='Number of frogs each fish eats per day' new_value=7.261148992340276
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] symbolic.predict               constraint_role='Number of gharials in the swamp' new_value=13.013845953328975
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] symbolic.predict               constraint_role='Number of fish each gharial eats per day' new_value=4.385496861797019
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:25 [debug    ] symbolic.predict               constraint_role='Number of frogs each fish eats per day' new_value=7.261148992340276
+2026-02-17 21:54:25 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:54:45 [debug    ] llm.response                   cost_usd=$0.006266 model=openrouter/deepseek/deepseek-r1 tokens=6557
+2026-02-17 21:54:54 [debug    ] llm.response                   cost_usd=$0.004577 model=openrouter/deepseek/deepseek-r1 tokens=5086
+2026-02-17 21:55:13 [debug    ] llm.response                   cost_usd=$0.005133 model=openrouter/deepseek/deepseek-r1 tokens=5325
+2026-02-17 21:55:14 [debug    ] llm.response                   cost_usd=$0.007056 model=openrouter/deepseek/deepseek-r1 tokens=5461
+2026-02-17 21:55:17 [debug    ] llm.response                   cost_usd=$0.004940 model=openrouter/deepseek/deepseek-r1 tokens=4547
+2026-02-17 21:55:33 [debug    ] llm.response                   cost_usd=$0.009047 model=openrouter/deepseek/deepseek-r1 tokens=7170
+2026-02-17 21:55:33 [info     ] predictions_collected          count=3
+2026-02-17 21:55:33 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:55:33 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:55:33 [debug    ] algebraic.solve                problem='Tom receives a $12 allowance per month. In the first week, he spends a third of '
+2026-02-17 21:55:33 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:55:33 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:55:33 [debug    ] numerical.solve                problem='Tom receives a $12 allowance per month. In the first week, he spends a third of '
+2026-02-17 21:55:33 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:55:33 [debug    ] symbolic.solve                 problem='Tom receives a $12 allowance per month. In the first week, he spends a third of '
+2026-02-17 21:55:33 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:55:48 [debug    ] llm.response                   cost_usd=$0.007963 model=openrouter/deepseek/deepseek-r1 tokens=6752
+2026-02-17 21:55:52 [debug    ] llm.response                   cost_usd=$0.007861 model=openrouter/deepseek/deepseek-r1 tokens=6156
+2026-02-17 21:56:02 [debug    ] llm.response                   cost_usd=$0.008622 model=openrouter/deepseek/deepseek-r1 tokens=7176
+2026-02-17 21:56:14 [debug    ] llm.response                   cost_usd=$0.009701 model=openrouter/deepseek/deepseek-r1 tokens=7697
+2026-02-17 21:56:18 [debug    ] llm.response                   cost_usd=$0.009617 model=openrouter/deepseek/deepseek-r1 tokens=7335
+2026-02-17 21:56:30 [debug    ] llm.response                   cost_usd=$0.005265 model=openrouter/deepseek/deepseek-r1 tokens=4870
+2026-02-17 21:56:41 [debug    ] llm.response                   cost_usd=$0.006575 model=openrouter/deepseek/deepseek-r1 tokens=5886
+2026-02-17 21:56:41 [info     ] numerical.solved               answer=6 confidence=1.0
+2026-02-17 21:57:10 [debug    ] llm.response                   cost_usd=$0.013265 model=openrouter/deepseek/deepseek-r1 tokens=9200
+2026-02-17 21:57:10 [info     ] predictions_collected          count=9
+2026-02-17 21:57:10 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:57:10 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:57:10 [debug    ] algebraic.solve                problem='Mrs. Garcia pays her insurance quarterly at $378. How much does she pay in a yea'
+2026-02-17 21:57:10 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:57:10 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:57:10 [debug    ] numerical.solve                problem='Mrs. Garcia pays her insurance quarterly at $378. How much does she pay in a yea'
+2026-02-17 21:57:10 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:57:10 [debug    ] symbolic.solve                 problem='Mrs. Garcia pays her insurance quarterly at $378. How much does she pay in a yea'
+2026-02-17 21:57:10 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:57:24 [debug    ] llm.response                   cost_usd=$0.002699 model=openrouter/deepseek/deepseek-r1 tokens=3992
+2026-02-17 21:57:24 [debug    ] symbolic.executing_code        code_len=208
+2026-02-17 21:57:24 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:57:24 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:57:24 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:57:24 [debug    ] llm.response                   cost_usd=$0.003197 model=openrouter/deepseek/deepseek-r1 tokens=4322
+2026-02-17 21:57:24 [info     ] numerical.solved               answer=1512 confidence=1.0
+2026-02-17 21:58:06 [debug    ] llm.response                   cost_usd=$0.005646 model=openrouter/deepseek/deepseek-r1 tokens=5417
+2026-02-17 21:58:06 [info     ] algebraic.solved               answer=1512 confidence=1.0
+2026-02-17 21:58:06 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:58:08 [debug    ] llm.response                   cost_usd=$0.000499 model=openrouter/google/gemini-2.0-flash-001 tokens=4741
+2026-02-17 21:58:08 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "quarterly_payment",\n    "original_value": 378,\n    "dtype": "numeric",\n    "role": "The amount of insurance payment made each quarter.",\n    "perturbation_range": [\n      100,\n      500\n    ]\n  }\n]\n```'
+2026-02-17 21:58:08 [info     ] perturbations_generated        count=1
+2026-02-17 21:58:08 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:58:08 [debug    ] algebraic.predict              constraint_role='The amount of insurance payment made each quarter.' new_value=500.0
+2026-02-17 21:58:08 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:08 [debug    ] numerical.predict              constraint_role='The amount of insurance payment made each quarter.' new_value=500.0
+2026-02-17 21:58:08 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:08 [debug    ] symbolic.predict               constraint_role='The amount of insurance payment made each quarter.' new_value=500.0
+2026-02-17 21:58:08 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:20 [debug    ] llm.response                   cost_usd=$0.002542 model=openrouter/deepseek/deepseek-r1 tokens=3814
+2026-02-17 21:58:21 [debug    ] llm.response                   cost_usd=$0.003046 model=openrouter/deepseek/deepseek-r1 tokens=4664
+2026-02-17 21:58:31 [debug    ] llm.response                   cost_usd=$0.013620 model=openrouter/deepseek/deepseek-r1 tokens=9726
+2026-02-17 21:58:31 [debug    ] symbolic.executing_code        code_len=283
+2026-02-17 21:58:31 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:58:31 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:58:31 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:58:31 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:58:34 [debug    ] llm.response                   cost_usd=$0.000576 model=openrouter/google/gemini-2.0-flash-001 tokens=5096
+2026-02-17 21:58:34 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "allowance",\n    "original_value": 12,\n    "dtype": "numeric",\n    "role": "Tom\'s monthly allowance in dollars",\n    "perturbation_range": [\n      0,\n      100\n    ]\n  },\n  {\n    "name": "spend_first_ratio",\n    "original_value": "1/3",\n    "dtype": "numeric",\n    "role": "Ratio of allowance spent in the first week",\n    "perturbation_range": [\n      0,\n      1\n    ]\n  },\n  {\n    "name": "spend_second_ratio",\n    "original_value": "1/4",\n    "dtype": "numeric",\n    "role": "Ratio of remaining money spent in the second week",\n    "perturbation_range": [\n      0,\n      1\n    ]\n  }\n]\n```'
+2026-02-17 21:58:34 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:58:34 [debug    ] algebraic.solve                problem='Hazel walked 2 kilometers in the first hour. If she walked twice as far in the s'
+2026-02-17 21:58:34 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:34 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:58:34 [debug    ] numerical.solve                problem='Hazel walked 2 kilometers in the first hour. If she walked twice as far in the s'
+2026-02-17 21:58:34 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:34 [debug    ] symbolic.solve                 problem='Hazel walked 2 kilometers in the first hour. If she walked twice as far in the s'
+2026-02-17 21:58:34 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:34 [debug    ] llm.response                   cost_usd=$0.003814 model=openrouter/deepseek/deepseek-r1 tokens=4875
+2026-02-17 21:58:34 [info     ] predictions_collected          count=3
+2026-02-17 21:58:34 [info     ] probe_verdict                  recommendation=reject score=0.0 verdict=easy_to_vary
+2026-02-17 21:58:34 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=algebraic
+2026-02-17 21:58:34 [debug    ] algebraic.solve                problem='Jackson wants to go on a shopping spree, so his mom says she will give him some '
+2026-02-17 21:58:34 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:34 [debug    ] no_calibration_artifact        model=openrouter/deepseek/deepseek-r1 strategy=numerical
+2026-02-17 21:58:34 [debug    ] numerical.solve                problem='Jackson wants to go on a shopping spree, so his mom says she will give him some '
+2026-02-17 21:58:34 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:34 [debug    ] symbolic.solve                 problem='Jackson wants to go on a shopping spree, so his mom says she will give him some '
+2026-02-17 21:58:34 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:58:48 [debug    ] llm.response                   cost_usd=$0.003001 model=openrouter/deepseek/deepseek-r1 tokens=4439
+2026-02-17 21:58:48 [debug    ] symbolic.executing_code        code_len=206
+2026-02-17 21:58:48 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:58:48 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:58:48 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:58:52 [debug    ] llm.response                   cost_usd=$0.003296 model=openrouter/deepseek/deepseek-r1 tokens=4586
+2026-02-17 21:58:52 [debug    ] symbolic.executing_code        code_len=555
+2026-02-17 21:58:52 [debug    ] sandbox.execute                allowed_imports=['sympy', 'numpy', 'math', 'fractions', 'decimal'] timeout=30
+2026-02-17 21:58:52 [error    ] sandbox.error                  error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:58:52 [warning  ] symbolic.sandbox_failed        error="[Errno 2] No such file or directory: 'python'"
+2026-02-17 21:58:53 [debug    ] llm.response                   cost_usd=$0.003590 model=openrouter/deepseek/deepseek-r1 tokens=5040
+2026-02-17 21:58:53 [info     ] numerical.solved               answer=6 confidence=1.0
+2026-02-17 21:59:08 [debug    ] llm.response                   cost_usd=$0.004452 model=openrouter/deepseek/deepseek-r1 tokens=5501
+2026-02-17 21:59:08 [info     ] numerical.solved               answer=30 confidence=1.0
+2026-02-17 21:59:09 [debug    ] llm.response                   cost_usd=$0.004248 model=openrouter/deepseek/deepseek-r1 tokens=4813
+2026-02-17 21:59:09 [info     ] algebraic.solved               answer=6 confidence=1.0
+2026-02-17 21:59:09 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:59:11 [debug    ] llm.response                   cost_usd=$0.000454 model=openrouter/google/gemini-2.0-flash-001 tokens=4301
+2026-02-17 21:59:11 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "distance_first_hour",\n    "original_value": 2,\n    "dtype": "numeric",\n    "role": "Distance Hazel walked in the first hour (kilometers)",\n    "perturbation_range": [\n      0,\n      10\n    ]\n  }\n]\n```'
+2026-02-17 21:59:11 [info     ] perturbations_generated        count=1
+2026-02-17 21:59:11 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:59:11 [debug    ] algebraic.predict              constraint_role='Distance Hazel walked in the first hour (kilometers)' new_value=2.916843405533009
+2026-02-17 21:59:11 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:11 [debug    ] numerical.predict              constraint_role='Distance Hazel walked in the first hour (kilometers)' new_value=2.916843405533009
+2026-02-17 21:59:11 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:11 [debug    ] symbolic.predict               constraint_role='Distance Hazel walked in the first hour (kilometers)' new_value=2.916843405533009
+2026-02-17 21:59:11 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:21 [debug    ] llm.response                   cost_usd=$0.005112 model=openrouter/deepseek/deepseek-r1 tokens=5395
+2026-02-17 21:59:21 [info     ] algebraic.solved               answer=30 confidence=1.0
+2026-02-17 21:59:21 [debug    ] llm.call                       model=openrouter/google/gemini-2.0-flash-001 num_messages=1
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+
+[1;31mProvider List: https://docs.litellm.ai/docs/providers[0m
+
+2026-02-17 21:59:24 [debug    ] llm.response                   cost_usd=$0.000600 model=openrouter/google/gemini-2.0-flash-001 tokens=5152
+2026-02-17 21:59:24 [info     ] constraint_extraction          raw='```json\n[\n  {\n    "name": "rate_per_hour",\n    "original_value": 5,\n    "dtype": "numeric",\n    "role": "hourly rate of pay",\n    "perturbation_range": [\n      1,\n      10\n    ]\n  },\n  {\n    "name": "vacuuming_time_per_session",\n    "original_value": 2,\n    "dtype": "numeric",\n    "role": "time spent vacuuming per session",\n    "perturbation_range": [\n      0.5,\n      5\n    ]\n  },\n  {\n    "name": "vacuuming_sessions",\n    "original_value": 2,\n    "dtype": "numeric",\n    "role": "number of vacuuming sessions",\n    "perturbation_range": [\n      1,\n      5\n    ]\n  },\n  {\n    "name": "dishes_time",\n    "original_value": 0.5,\n    "dtype": "numeric",\n    "role": "time spent washing dishes",\n    "perturbation_range": [\n      0.25,\n      2\n    ]\n  }\n]\n```'
+2026-02-17 21:59:24 [info     ] perturbations_generated        count=3
+2026-02-17 21:59:24 [warning  ] ground_truth_validation_failed_non_numeric
+2026-02-17 21:59:24 [debug    ] algebraic.predict              constraint_role='hourly rate of pay' new_value=6.501700943127851
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] algebraic.predict              constraint_role='time spent vacuuming per session' new_value=0.6321210363236384
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] algebraic.predict              constraint_role='number of vacuuming sessions' new_value=2.1502562626002035
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] numerical.predict              constraint_role='hourly rate of pay' new_value=6.501700943127851
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] numerical.predict              constraint_role='time spent vacuuming per session' new_value=0.6321210363236384
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] numerical.predict              constraint_role='number of vacuuming sessions' new_value=2.1502562626002035
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] symbolic.predict               constraint_role='hourly rate of pay' new_value=6.501700943127851
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] symbolic.predict               constraint_role='time spent vacuuming per session' new_value=0.6321210363236384
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:24 [debug    ] symbolic.predict               constraint_role='number of vacuuming sessions' new_value=2.1502562626002035
+2026-02-17 21:59:24 [debug    ] llm.call                       model=openrouter/deepseek/deepseek-r1 num_messages=2
+2026-02-17 21:59:31 [debug    ] llm.response                   cost_usd=$0.003731 model=openrouter/deepseek/deepseek-r1 tokens=5131
+2026-02-17 21:59:40 [debug    ] llm.response                   cost_usd=$0.003992 model=openrouter/deepseek/deepseek-r1 tokens=4741
+2026-02-17 21:59:48 [debug    ] llm.response                   cost_usd=$0.003659 model=openrouter/deepseek/deepseek-r1 tokens=4682
+2026-02-17 21:59:50 [debug    ] llm.response                   cost_usd=$0.004471 model=openrouter/deepseek/deepseek-r1 tokens=5585
+2026-02-17 21:59:59 [debug    ] llm.response                   cost_usd=$0.004378 model=openrouter/deepseek/deepseek-r1 tokens=4930
+2026-02-17 22:00:18 [debug    ] llm.response                   cost_usd=$0.005748 model=openrouter/deepseek/deepseek-r1 tokens=5797
+2026-02-17 22:00:44 [debug    ] llm.response                   cost_usd=$0.007466 model=openrouter/deepseek/deepseek-r1 tokens=6370
+2026-02-17 22:00:48 [debug    ] llm.response                   cost_usd=$0.007417 model=openrouter/deepseek/deepseek-r1 tokens=6091
+2026-02-17 22:01:01 [debug    ] llm.response                   cost_usd=$0.008744 model=openrouter/deepseek/deepseek-r1 tokens=7031

@@ -9,7 +9,13 @@ import pytest
 
 from elenchus.council.base import BaseCouncilor
 from elenchus.council.numerical import NumericalCouncilor
+from elenchus.llm import LLMResponse, UsageInfo
 from elenchus.state import CouncilorResult
+
+
+def _make_llm_response(data: dict) -> LLMResponse:
+    return LLMResponse(text=json.dumps(data), model="test", usage=UsageInfo())
+
 
 # ---------------------------------------------------------------------------
 # NumericalCouncilor
@@ -25,23 +31,15 @@ class TestNumericalCouncilor:
         assert c.strategy == "numerical"
 
     async def test_solve(self):
-        mock_response = MagicMock()
-        mock_response.content = [
-            MagicMock(
-                text=json.dumps(
-                    {
-                        "answer": 42.0,
-                        "reasoning": "Estimate: ~40. Verify: 6 * 7 = 42. Confirmed.",
-                        "confidence": 0.9,
-                    }
-                )
-            )
-        ]
+        mock_response = _make_llm_response(
+            {
+                "answer": 42.0,
+                "reasoning": "Estimate: ~40. Verify: 6 * 7 = 42. Confirmed.",
+                "confidence": 0.9,
+            }
+        )
 
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_response)
-
-        with patch("elenchus.council.numerical._get_client", return_value=mock_client):
+        with patch("elenchus.council.base.complete", new_callable=AsyncMock, return_value=mock_response):
             councilor = NumericalCouncilor()
             result = await councilor.solve("What is 6 times 7?")
 
@@ -52,25 +50,17 @@ class TestNumericalCouncilor:
         assert result.confidence == 0.9
         assert result.code is None
 
-    async def test_predict(self):
-        mock_response = MagicMock()
-        mock_response.content = [
-            MagicMock(
-                text=json.dumps(
-                    {
-                        "predicted_answer": 48.0,
-                        "predicted_reasoning": "Changing 7 to 8: 6 * 8 = 48",
-                    }
-                )
-            )
-        ]
+    async def test_instruct(self):
+        mock_response = _make_llm_response(
+            {
+                "new_answer": 48.0,
+                "new_reasoning": "Changing 7 to 8: 6 * 8 = 48",
+            }
+        )
 
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_response)
-
-        with patch("elenchus.council.numerical._get_client", return_value=mock_client):
+        with patch("elenchus.council.base.complete", new_callable=AsyncMock, return_value=mock_response):
             councilor = NumericalCouncilor()
-            result = await councilor.predict(
+            result = await councilor.instruct(
                 problem="What is 6 times 7?",
                 original_answer=42.0,
                 original_reasoning="6 * 7 = 42",
@@ -80,18 +70,16 @@ class TestNumericalCouncilor:
             )
 
         assert isinstance(result, dict)
-        assert result["predicted_answer"] == 48.0
-        assert "predicted_reasoning" in result
+        assert result["new_answer"] == 48.0
+        assert "new_reasoning" in result
 
 
 @pytest.mark.asyncio
 async def test_numerical_uses_calibrated_prompt_when_available(monkeypatch):
     """When a calibration artifact exists, the councilor should use the DSPy program."""
-    from unittest.mock import MagicMock
 
     from elenchus.calibration import loader as loader_module
 
-    # Mock DSPy program that returns a result
     mock_program = MagicMock()
     mock_program.return_value = MagicMock(
         answer=42.0,
@@ -99,7 +87,6 @@ async def test_numerical_uses_calibrated_prompt_when_available(monkeypatch):
     )
     monkeypatch.setattr(loader_module, "load_optimized_prompt", lambda s, m: mock_program)
 
-    # Mock dspy.configure to avoid needing a real LM
     import dspy
 
     monkeypatch.setattr(dspy, "configure", lambda **kwargs: None)

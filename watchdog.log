@@ -1,0 +1,4 @@
+nohup: ignoring input
+[2026-02-17 21:36:41] 🚀 Watchdog started. Monitoring benchmark_probe.py...
+[2026-02-17 21:36:42] ✅ Found benchmark process: PID 482833
+[2026-02-17 22:01:42] ⚠️  Benchmark process died! It is no longer running.

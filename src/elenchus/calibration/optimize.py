@@ -12,6 +12,7 @@ from elenchus.calibration.signatures import (
     AlgebraicMathSolver,
     NumericalMathSolver,
 )
+from elenchus.config import get_model_config
 
 logger = structlog.get_logger()
 
@@ -59,7 +60,7 @@ def prepare_trainset(problems: list[dict]) -> list[dspy.Example]:
 
 def run_optimization(
     strategy: str,
-    model_name: str = "claude-sonnet-4-5-20250929",
+    model_name: str | None = None,
     num_trials: int = 10,
     num_candidates: int = 10,
     max_bootstrapped_demos: int = 3,
@@ -69,7 +70,8 @@ def run_optimization(
 
     Args:
         strategy: "numerical" or "algebraic"
-        model_name: Anthropic model ID to optimize for
+        model_name: LiteLLM model string (e.g. "anthropic/claude-sonnet-4-5-20250929").
+                    Defaults to ``get_model_config().capable``.
         num_trials: Number of MIPROv2 optimization trials
         max_bootstrapped_demos: Max few-shot examples from bootstrapping
         max_labeled_demos: Max labeled examples to include
@@ -77,6 +79,9 @@ def run_optimization(
     Returns:
         Path to the saved optimized program artifact.
     """
+    if model_name is None:
+        model_name = get_model_config().capable
+
     if strategy not in _STRATEGY_SIGNATURES:
         raise ValueError(f"Unknown strategy: {strategy}. Must be one of {list(_STRATEGY_SIGNATURES)}")
 
@@ -84,8 +89,8 @@ def run_optimization(
     problems = load_calibration_problems()
     trainset = prepare_trainset(problems)
 
-    # Configure DSPy with Anthropic
-    lm = dspy.LM(f"anthropic/{model_name}")
+    # Configure DSPy — model_name is already in LiteLLM format (e.g. "anthropic/...")
+    lm = dspy.LM(model_name)
     dspy.configure(lm=lm)
 
     # Build the program

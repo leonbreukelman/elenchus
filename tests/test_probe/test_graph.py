@@ -198,8 +198,8 @@ async def test_score_alignment_calls_mechanism_judge(monkeypatch):
             {
                 "_perturbation": "P",
                 "_strategy": "algebraic",
-                "predicted_answer": 17422.0,
-                "predicted_reasoning": "Higher principal scales linearly.",
+                "new_answer": 17422.0,
+                "new_reasoning": "Higher principal scales linearly.",
             }
         ],
         "ground_truths": [

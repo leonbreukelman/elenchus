@@ -7,11 +7,15 @@ from typing import TypedDict
 
 import structlog
 from langgraph.graph import END, START, StateGraph
+from pydantic import BaseModel
 
 from elenchus.council.algebraic import AlgebraicCouncilor
 from elenchus.council.consensus import evaluate_consensus
 from elenchus.council.numerical import NumericalCouncilor
 from elenchus.council.symbolic import SymbolicCouncilor
+from elenchus.llm import UsageInfo
+from elenchus.policy.loader import load_domain_config
+from elenchus.policy.schemas import DomainConfig
 from elenchus.probe.graph import build_probe_graph
 from elenchus.router import route_problem
 from elenchus.state import (
@@ -26,14 +30,34 @@ from elenchus.state import (
 logger = structlog.get_logger()
 
 
+class UsageStats(BaseModel):
+    """Accumulated token usage and cost across all LLM calls."""
+
+    total_tokens: int = 0
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_cost_usd: float = 0.0
+    calls: int = 0
+
+    def add(self, usage: UsageInfo) -> None:
+        """Accumulate usage from a single LLM call."""
+        self.total_tokens += usage.total_tokens
+        self.prompt_tokens += usage.prompt_tokens
+        self.completion_tokens += usage.completion_tokens
+        self.total_cost_usd += usage.cost_usd
+        self.calls += 1
+
+
 class EngineState(TypedDict, total=False):
     problem: str
     routing: RoutingResult
+    domain_config: DomainConfig
     councilor_results: list[CouncilorResult]
     consensus: ConsensusResult
     council_result: CouncilResult
     probe_result: DeutschProbeResult | None
     verified_result: VerifiedResult
+    usage: UsageStats
 
 
 async def route_node(state: EngineState) -> dict:
@@ -44,40 +68,56 @@ async def route_node(state: EngineState) -> dict:
 
 async def council_node(state: EngineState) -> dict:
     councilors = [AlgebraicCouncilor(), NumericalCouncilor(), SymbolicCouncilor()]
-    results = await asyncio.gather(*[c.solve(state["problem"]) for c in councilors])
-    return {"councilor_results": list(results)}
+    raw_results = await asyncio.gather(
+        *[c.solve(state["problem"]) for c in councilors],
+        return_exceptions=True,
+    )
+    results = []
+    for r, c in zip(raw_results, councilors):
+        if isinstance(r, Exception):
+            logger.warning("councilor_failed", strategy=c.strategy, error=str(r))
+        else:
+            results.append(r)
+    if not results:
+        raise RuntimeError("All councilors failed — cannot proceed")
+    return {"councilor_results": results}
 
 
 async def consensus_node(state: EngineState) -> dict:
-    consensus = evaluate_consensus(state["councilor_results"])
+    domain_name = state["routing"].domain
+    try:
+        domain_config = load_domain_config(domain_name)
+    except FileNotFoundError:
+        logger.info("domain_config_fallback", domain=domain_name)
+        domain_config = load_domain_config("_base")
+
+    rel_tol = domain_config.council.consensus_tolerance_relative
+    consensus = evaluate_consensus(state["councilor_results"], rel_tol=rel_tol)
+    logger.info("consensus_evaluated", agreement=consensus.agreement, tolerance=rel_tol)
+
     council_result = CouncilResult(
         problem=state["problem"],
-        domain=state["routing"].domain,
+        domain=domain_name,
         routing=state["routing"],
         councilor_results=state["councilor_results"],
         consensus=consensus,
     )
-    return {"consensus": consensus, "council_result": council_result}
-
-
-def should_probe(state: EngineState) -> str:
-    """Decide whether to run the Deutsch Probe.
-
-    Always runs the probe. Unanimous agreement doesn't mean the councilors
-    understand the problem — it means they converged on the same number.
-    The probe tests whether that convergence reflects genuine understanding.
-    """
-    return "run_probe"
+    return {"consensus": consensus, "council_result": council_result, "domain_config": domain_config}
 
 
 async def probe_node(state: EngineState) -> dict:
+    domain_config = state.get("domain_config")
+    probe_config = domain_config.probe if domain_config else None
+
     probe_graph = build_probe_graph()
-    result = await probe_graph.ainvoke({"council_result": state["council_result"]})
+    probe_input = {"council_result": state["council_result"]}
+    if probe_config:
+        probe_input["perturbation_budget"] = probe_config.perturbation_budget
+        probe_input["confidence_threshold"] = probe_config.confidence_threshold
+        probe_input["reject_threshold"] = probe_config.reject_threshold
+
+    result = await probe_graph.ainvoke(probe_input)
     return {"probe_result": result.get("probe_result")}
-
-
-async def skip_probe_node(state: EngineState) -> dict:
-    return {"probe_result": None}
 
 
 async def output_node(state: EngineState) -> dict:
@@ -101,22 +141,13 @@ def build_engine_graph():
     builder.add_node("council", council_node)
     builder.add_node("consensus", consensus_node)
     builder.add_node("probe", probe_node)
-    builder.add_node("skip_probe", skip_probe_node)
     builder.add_node("output", output_node)
 
     builder.add_edge(START, "route")
     builder.add_edge("route", "council")
     builder.add_edge("council", "consensus")
-    builder.add_conditional_edges(
-        "consensus",
-        should_probe,
-        {
-            "run_probe": "probe",
-            "skip_probe": "skip_probe",
-        },
-    )
+    builder.add_edge("consensus", "probe")
     builder.add_edge("probe", "output")
-    builder.add_edge("skip_probe", "output")
     builder.add_edge("output", END)
 
     return builder.compile()

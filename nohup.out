@@ -1,0 +1,31 @@
+Starting benchmark with:
+  FAST: openai/gemini-2.5-flash
+  CAPABLE: openai/gemini-2.5-pro
+  BASE: http://localhost:8317/v1
+Starting benchmark with OpenRouter:
+  FAST: openrouter/google/gemini-flash-1.5
+  CAPABLE: openrouter/google/gemini-pro-1.5
+Starting benchmark with OpenRouter:
+  FAST: openrouter/google/gemini-2.0-flash-001
+  CAPABLE: openrouter/google/gemini-2.0-pro-exp-02-05
+Starting benchmark with OpenRouter:
+  FAST: openrouter/google/gemini-1.5-flash
+  CAPABLE: openrouter/google/gemini-1.5-pro
+Starting benchmark with OpenRouter:
+  FAST: openrouter/google/gemini-2.5-flash
+  CAPABLE: openrouter/google/gemini-2.5-pro
+Terminated
+Starting benchmark with OpenRouter:
+  FAST: openrouter/google/gemini-2.5-flash
+  CAPABLE: openrouter/google/gemini-2.5-pro
+Starting benchmark with OpenRouter:
+  FAST: openrouter/qwen/qwen3-coder:free
+  CAPABLE: openrouter/deepseek/deepseek-r1-0528:free
+Terminated
+Starting benchmark with OpenRouter:
+  FAST: openrouter/qwen/qwen3-coder:free
+  CAPABLE: openrouter/deepseek/deepseek-r1-0528:free
+Terminated
+Starting benchmark with OpenRouter:
+  FAST: openrouter/qwen/qwen3-32b
+  CAPABLE: openrouter/deepseek/deepseek-r1-0528

@@ -2,20 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any
-
-import anthropic
-import structlog
-
-from elenchus import extract_json
 from elenchus.council.base import BaseCouncilor
-from elenchus.state import CouncilorResult
 
-log = structlog.get_logger()
 
-SOLVE_MODEL = "claude-sonnet-4-5-20250929"
+class NumericalCouncilor(BaseCouncilor):
+    """Councilor that solves problems via estimate-then-verify."""
 
-SOLVE_PROMPT = """\
+    strategy: str = "numerical"
+
+    solve_prompt: str = """\
 You are a precise mathematical solver using numerical estimation and verification.
 Follow this two-step process:
 1. ESTIMATE: Make a rough numerical estimate of the answer.
@@ -29,8 +24,8 @@ Return ONLY valid JSON with:
 No markdown fences or extra text.
 """
 
-PREDICT_PROMPT = """\
-You previously solved this problem:
+    instruct_prompt: str = """\
+You previously solved this problem using numerical estimation and verification:
 
 Problem: {problem}
 Your answer: {original_answer}
@@ -39,106 +34,13 @@ Your reasoning: {original_reasoning}
 Now a constraint has changed. The {constraint_role} "{original_value}" \
 has been changed to "{new_value}".
 
-Predict what the new answer would be under this change.
+Using your same estimate-then-verify method, calculate the new answer step \
+by step with this changed value:
+1. ESTIMATE: What rough value do you expect with the new constraint?
+2. CALCULATE: Work through the exact computation to get the precise answer.
 Return ONLY valid JSON with:
-- "predicted_answer": the new numeric answer
-- "predicted_reasoning": step-by-step reasoning for the new answer
+- "new_answer": the new numeric answer (a number, not a string)
+- "new_reasoning": the complete estimate-then-verify calculation
 
 No markdown fences or extra text.
 """
-
-
-def _get_client() -> anthropic.AsyncAnthropic:
-    """Factory for the Anthropic async client. Isolated for easy mocking."""
-    return anthropic.AsyncAnthropic()
-
-
-class NumericalCouncilor(BaseCouncilor):
-    """Councilor that solves problems via estimate-then-verify."""
-
-    strategy: str = "numerical"
-
-    async def solve(self, problem: str) -> CouncilorResult:
-        """Solve the problem by estimating, then verifying numerically."""
-        from elenchus.calibration import loader as loader_module
-
-        calibrated = loader_module.load_optimized_prompt("numerical", SOLVE_MODEL)
-        if calibrated is not None:
-            try:
-                import dspy
-
-                dspy.configure(lm=dspy.LM(f"anthropic/{SOLVE_MODEL}"))
-                result = calibrated(problem=problem)
-                answer = float(result.answer)
-                log.info("numerical.solved_calibrated", answer=answer)
-                return CouncilorResult(
-                    strategy=self.strategy,
-                    answer=answer,
-                    reasoning=str(result.reasoning),
-                    confidence=0.85,
-                )
-            except Exception:
-                log.warning("numerical.calibrated_failed_fallback", exc_info=True)
-
-        # Fall through to original hand-written prompt
-        client = _get_client()
-
-        log.debug("numerical.solve", problem=problem[:80])
-
-        response = await client.messages.create(
-            model=SOLVE_MODEL,
-            max_tokens=1024,
-            messages=[{"role": "user", "content": problem}],
-            system=SOLVE_PROMPT,
-        )
-
-        raw = response.content[0].text
-        log.debug("numerical.raw_response", raw=raw[:200])
-
-        data = extract_json(raw)
-
-        result = CouncilorResult(
-            strategy=self.strategy,
-            answer=data["answer"],
-            reasoning=data["reasoning"],
-            confidence=data["confidence"],
-            code=None,
-        )
-
-        log.info("numerical.solved", answer=result.answer, confidence=result.confidence)
-        return result
-
-    async def predict(
-        self,
-        problem: str,
-        original_answer: Any,
-        original_reasoning: str,
-        constraint_role: str,
-        original_value: Any,
-        new_value: Any,
-    ) -> dict:
-        """Predict how the answer changes under a constraint perturbation."""
-        client = _get_client()
-
-        prompt = PREDICT_PROMPT.format(
-            problem=problem,
-            original_answer=original_answer,
-            original_reasoning=original_reasoning,
-            constraint_role=constraint_role,
-            original_value=original_value,
-            new_value=new_value,
-        )
-
-        log.debug("numerical.predict", constraint_role=constraint_role, new_value=new_value)
-
-        response = await client.messages.create(
-            model=SOLVE_MODEL,
-            max_tokens=1024,
-            messages=[{"role": "user", "content": prompt}],
-            system="You are a precise mathematical predictor. Return only valid JSON.",
-        )
-
-        raw = response.content[0].text
-        log.debug("numerical.predict_response", raw=raw[:200])
-
-        return extract_json(raw)
