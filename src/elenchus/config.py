@@ -20,25 +20,56 @@ class ModelConfig(BaseModel):
     """Which LLM models to use for each tier.
 
     Uses LiteLLM model strings (``"provider/model-name"``).
+    All fields must be set via environment variables — there are no defaults.
     """
 
-    fast: str = "anthropic/claude-haiku-4-5-20251001"
+    fast: str
     """Cheap/fast model for routing, constraint extraction, mechanism judging."""
 
-    capable: str = "anthropic/claude-sonnet-4-5-20250929"
+    capable: str
     """More capable model for core problem-solving (councilors, calibration)."""
+
+    max_tokens_fast: int = 4096
+    """Max completion tokens for the fast tier."""
+
+    max_tokens_capable: int = 16384
+    """Max completion tokens for the capable tier.
+
+    Reasoning models (deepseek-r1, qwen3) routinely produce 8-23K tokens
+    of chain-of-thought on math problems. 16384 provides headroom for most
+    GSM8K-level problems; increase to 32768 for competition-level math.
+    """
 
 
 @lru_cache(maxsize=1)
 def get_model_config() -> ModelConfig:
-    """Load model config from environment with sensible Anthropic defaults.
+    """Load model config from environment variables.
 
-    Override via::
+    Required env vars::
 
-        ELENCHUS_MODEL_FAST=openai/gpt-4o-mini
-        ELENCHUS_MODEL_CAPABLE=openai/gpt-4o
+        ELENCHUS_MODEL_FAST=openrouter/qwen/qwen3-32b
+        ELENCHUS_MODEL_CAPABLE=openrouter/deepseek/deepseek-r1-0528
+
+    Optional::
+
+        ELENCHUS_MAX_TOKENS_FAST=4096
+        ELENCHUS_MAX_TOKENS_CAPABLE=16384
     """
+    fast = os.getenv("ELENCHUS_MODEL_FAST")
+    capable = os.getenv("ELENCHUS_MODEL_CAPABLE")
+
+    if not fast or not capable:
+        raise RuntimeError(
+            "Model configuration required. Set environment variables:\n"
+            "  ELENCHUS_MODEL_FAST=openrouter/qwen/qwen3-32b\n"
+            "  ELENCHUS_MODEL_CAPABLE=openrouter/deepseek/deepseek-r1-0528\n"
+            "\n"
+            "Any LiteLLM model string works (openrouter/*, openai/*, etc.)"
+        )
+
     return ModelConfig(
-        fast=os.getenv("ELENCHUS_MODEL_FAST", ModelConfig.model_fields["fast"].default),
-        capable=os.getenv("ELENCHUS_MODEL_CAPABLE", ModelConfig.model_fields["capable"].default),
+        fast=fast,
+        capable=capable,
+        max_tokens_fast=int(os.getenv("ELENCHUS_MAX_TOKENS_FAST", "4096")),
+        max_tokens_capable=int(os.getenv("ELENCHUS_MAX_TOKENS_CAPABLE", "16384")),
     )

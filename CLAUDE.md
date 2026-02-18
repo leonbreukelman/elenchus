@@ -6,7 +6,7 @@ Neuro-symbolic math verification engine. Solves math problems with three paralle
 
 - `src/elenchus/engine.py` — Main LangGraph (router + council + consensus + conditional probe)
 - `src/elenchus/probe/graph.py` — Deutsch Probe subgraph (extract → perturb → instruct → ground truth → score)
-- `src/elenchus/probe/mechanism_judge.py` — LLM judge for reasoning quality (Haiku)
+- `src/elenchus/probe/mechanism_judge.py` — LLM judge for reasoning quality
 - `src/elenchus/calibration/` — DSPy prompt optimization pipeline
 - `src/elenchus/state.py` — All shared data models
 - `domains/` — YAML domain configs (domains are data, not code)
@@ -18,7 +18,7 @@ Neuro-symbolic math verification engine. Solves math problems with three paralle
 - Lint: `uv run ruff check src/ tests/`
 - Format: `uv run ruff format src/ tests/`
 - Calibrate: `uv run python scripts/calibrate.py --strategy numerical`
-- Integration tests require `ANTHROPIC_API_KEY`
+- Integration tests require `ELENCHUS_MODEL_FAST` and `ELENCHUS_MODEL_CAPABLE` env vars
 
 ## Conventions
 
@@ -27,7 +27,8 @@ Neuro-symbolic math verification engine. Solves math problems with three paralle
 - Config: Pydantic validated YAML
 - Async throughout (LLM calls, sandbox execution)
 - Structured logging via structlog
-- Councilor seams via `_get_client()` for test mocking
+- LLM calls go through `elenchus.llm.complete()` — mock this in tests
+- Model-agnostic: config via env vars, no provider defaults
 - Calibration artifacts stored in `src/elenchus/calibration/artifacts/`
 
 ## CRITICALS

@@ -76,7 +76,7 @@ async def extract_constraints(problem: str, solution: str, symbolic_code: str | 
     response = await complete(
         model=model,
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=512,
+        max_tokens=get_model_config().max_tokens_fast,
     )
 
     logger.info("constraint_extraction", raw=response.text)

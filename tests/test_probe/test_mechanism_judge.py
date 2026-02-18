@@ -100,7 +100,9 @@ async def test_judge_prompt_includes_delta_information():
 
     mock_response = _make_llm_response({"score": 0.9, "reasoning": "Delta is correct."})
 
-    with patch("elenchus.probe.mechanism_judge.complete", new_callable=AsyncMock, return_value=mock_response) as mock_complete:
+    with patch(
+        "elenchus.probe.mechanism_judge.complete", new_callable=AsyncMock, return_value=mock_response
+    ) as mock_complete:
         await judge_mechanism(
             constraint_role="annual interest rate",
             original_value=0.05,

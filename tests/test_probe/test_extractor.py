@@ -20,12 +20,27 @@ def _make_llm_response(data) -> LLMResponse:
 async def test_extract_constraints_compound_interest():
     mock_response = _make_llm_response(
         [
-            {"name": "principal", "original_value": 10000, "dtype": "numeric",
-             "role": "initial investment amount", "perturbation_range": [1000, 50000]},
-            {"name": "rate", "original_value": 0.05, "dtype": "numeric",
-             "role": "annual interest rate", "perturbation_range": [0.01, 0.20]},
-            {"name": "time", "original_value": 3, "dtype": "numeric",
-             "role": "investment period in years", "perturbation_range": [1, 30]},
+            {
+                "name": "principal",
+                "original_value": 10000,
+                "dtype": "numeric",
+                "role": "initial investment amount",
+                "perturbation_range": [1000, 50000],
+            },
+            {
+                "name": "rate",
+                "original_value": 0.05,
+                "dtype": "numeric",
+                "role": "annual interest rate",
+                "perturbation_range": [0.01, 0.20],
+            },
+            {
+                "name": "time",
+                "original_value": 3,
+                "dtype": "numeric",
+                "role": "investment period in years",
+                "perturbation_range": [1, 30],
+            },
         ]
     )
 
@@ -55,18 +70,40 @@ async def test_extract_constraints_with_symbolic_code():
     )
     mock_response = _make_llm_response(
         [
-            {"name": "P", "original_value": 10000, "dtype": "numeric",
-             "role": "principal amount", "perturbation_range": [1000, 50000]},
-            {"name": "r", "original_value": 0.05, "dtype": "numeric",
-             "role": "annual interest rate", "perturbation_range": [0.01, 0.20]},
-            {"name": "n", "original_value": 12, "dtype": "numeric",
-             "role": "compounding frequency per year", "perturbation_range": [1, 365]},
-            {"name": "t", "original_value": 3, "dtype": "numeric",
-             "role": "investment period in years", "perturbation_range": [1, 30]},
+            {
+                "name": "P",
+                "original_value": 10000,
+                "dtype": "numeric",
+                "role": "principal amount",
+                "perturbation_range": [1000, 50000],
+            },
+            {
+                "name": "r",
+                "original_value": 0.05,
+                "dtype": "numeric",
+                "role": "annual interest rate",
+                "perturbation_range": [0.01, 0.20],
+            },
+            {
+                "name": "n",
+                "original_value": 12,
+                "dtype": "numeric",
+                "role": "compounding frequency per year",
+                "perturbation_range": [1, 365],
+            },
+            {
+                "name": "t",
+                "original_value": 3,
+                "dtype": "numeric",
+                "role": "investment period in years",
+                "perturbation_range": [1, 30],
+            },
         ]
     )
 
-    with patch("elenchus.probe.extractor.complete", new_callable=AsyncMock, return_value=mock_response) as mock_complete:
+    with patch(
+        "elenchus.probe.extractor.complete", new_callable=AsyncMock, return_value=mock_response
+    ) as mock_complete:
         constraints = await extract_constraints(
             problem="$10,000 at 5% compounded monthly for 3 years",
             solution="$11,614.72",
@@ -89,12 +126,19 @@ async def test_extract_constraints_without_symbolic_code_uses_fallback():
     """When symbolic_code is None, the original prompt is used (no code reference)."""
     mock_response = _make_llm_response(
         [
-            {"name": "principal", "original_value": 10000, "dtype": "numeric",
-             "role": "initial investment amount", "perturbation_range": [1000, 50000]},
+            {
+                "name": "principal",
+                "original_value": 10000,
+                "dtype": "numeric",
+                "role": "initial investment amount",
+                "perturbation_range": [1000, 50000],
+            },
         ]
     )
 
-    with patch("elenchus.probe.extractor.complete", new_callable=AsyncMock, return_value=mock_response) as mock_complete:
+    with patch(
+        "elenchus.probe.extractor.complete", new_callable=AsyncMock, return_value=mock_response
+    ) as mock_complete:
         constraints = await extract_constraints(
             problem="$10,000 at 5% compounded monthly for 3 years",
             solution="$11,614.72",
@@ -115,11 +159,20 @@ async def test_extract_constraints_without_symbolic_code_uses_fallback():
 async def test_extract_constraints_prompt_requests_dtype():
     """The extraction prompt should ask for dtype classification."""
     mock_response = _make_llm_response(
-        [{"name": "people", "original_value": 5, "dtype": "integer",
-          "role": "number of workers", "perturbation_range": [1, 20]}]
+        [
+            {
+                "name": "people",
+                "original_value": 5,
+                "dtype": "integer",
+                "role": "number of workers",
+                "perturbation_range": [1, 20],
+            }
+        ]
     )
 
-    with patch("elenchus.probe.extractor.complete", new_callable=AsyncMock, return_value=mock_response) as mock_complete:
+    with patch(
+        "elenchus.probe.extractor.complete", new_callable=AsyncMock, return_value=mock_response
+    ) as mock_complete:
         constraints = await extract_constraints(
             problem="5 workers build a wall in 10 days",
             solution="10 days",

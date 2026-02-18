@@ -9,7 +9,6 @@ description = "Neuro-symbolic math verification via perturbation testing"
 requires-python = ">=3.12"
 dependencies = [
     "langgraph>=1.0",
-    "anthropic>=0.40",
     "litellm>=1.50",
     "sympy>=1.13",
     "pydantic>=2",

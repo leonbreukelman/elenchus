@@ -9,17 +9,24 @@ uv sync --dev
 uv run pytest tests/ -v
 ```
 
-Requires `ANTHROPIC_API_KEY` for integration tests.
-
 ## Configuration
 
-Elenchus supports OpenRouter for cost-effective benchmarking. Create a `.env` file:
+Elenchus is model-agnostic — any LiteLLM-compatible provider works (OpenRouter, OpenAI, local). Set model configuration via environment variables:
 
 ```bash
-OPENROUTER_API_KEY=sk-or-v1-...
+# Required — no defaults, will error if unset
 ELENCHUS_MODEL_FAST=openrouter/qwen/qwen3-32b
 ELENCHUS_MODEL_CAPABLE=openrouter/deepseek/deepseek-r1-0528
+
+# Optional — token budgets (defaults shown)
+ELENCHUS_MAX_TOKENS_FAST=4096
+ELENCHUS_MAX_TOKENS_CAPABLE=16384
+
+# Provider credentials
+OPENROUTER_API_KEY=sk-or-v1-...
 ```
+
+For reasoning models (deepseek-r1, qwen3 thinking), increase `ELENCHUS_MAX_TOKENS_CAPABLE` to 32768 for competition-level math.
 
 ## Benchmarking
 

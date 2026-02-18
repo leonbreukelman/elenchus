@@ -36,6 +36,7 @@ async def route_problem(problem: str) -> RoutingResult:
         model=model,
         messages=[{"role": "user", "content": problem}],
         system=SYSTEM_PROMPT,
+        max_tokens=get_model_config().max_tokens_fast,
     )
 
     data = extract_json(response.text)

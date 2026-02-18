@@ -70,7 +70,7 @@ def run_optimization(
 
     Args:
         strategy: "numerical" or "algebraic"
-        model_name: LiteLLM model string (e.g. "anthropic/claude-sonnet-4-5-20250929").
+        model_name: LiteLLM model string (e.g. "openrouter/deepseek/deepseek-r1-0528").
                     Defaults to ``get_model_config().capable``.
         num_trials: Number of MIPROv2 optimization trials
         max_bootstrapped_demos: Max few-shot examples from bootstrapping
@@ -89,7 +89,7 @@ def run_optimization(
     problems = load_calibration_problems()
     trainset = prepare_trainset(problems)
 
-    # Configure DSPy — model_name is already in LiteLLM format (e.g. "anthropic/...")
+    # Configure DSPy — model_name is already in LiteLLM format (e.g. "openrouter/...")
     lm = dspy.LM(model_name)
     dspy.configure(lm=lm)
 

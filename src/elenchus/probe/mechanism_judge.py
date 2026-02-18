@@ -76,7 +76,7 @@ async def judge_mechanism(
         response = await complete(
             model=model,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=256,
+            max_tokens=get_model_config().max_tokens_fast,
         )
 
         data = extract_json(response.text)

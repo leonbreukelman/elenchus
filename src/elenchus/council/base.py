@@ -66,6 +66,7 @@ class BaseCouncilor:
             model=model,
             messages=[{"role": "user", "content": problem}],
             system=self.solve_prompt,
+            max_tokens=get_model_config().max_tokens_capable,
         )
 
         data = extract_json(response.text)
@@ -116,6 +117,7 @@ class BaseCouncilor:
             model=model,
             messages=[{"role": "user", "content": prompt}],
             system="You are a precise mathematical calculator. Calculate the answer step by step. Return only valid JSON.",
+            max_tokens=get_model_config().max_tokens_capable,
         )
 
         return extract_json(response.text)
