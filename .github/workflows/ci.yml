@@ -17,6 +17,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    env:
+      ELENCHUS_MODEL_FAST: ci/dummy-fast
+      ELENCHUS_MODEL_CAPABLE: ci/dummy-capable
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
