@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import anthropic
 import structlog
 
 from elenchus import extract_json
+from elenchus.config import get_model_config
+from elenchus.llm import complete
 from elenchus.state import Constraint
 
 logger = structlog.get_logger()
@@ -55,10 +56,6 @@ Code:
 {symbolic_code}"""
 
 
-def _get_client() -> anthropic.AsyncAnthropic:
-    return anthropic.AsyncAnthropic()
-
-
 async def extract_constraints(problem: str, solution: str, symbolic_code: str | None = None) -> list[Constraint]:
     """Extract perturbable constraints from a problem-solution pair.
 
@@ -70,13 +67,14 @@ async def extract_constraints(problem: str, solution: str, symbolic_code: str | 
     else:
         prompt = EXTRACTION_PROMPT.format(problem=problem, solution=solution)
 
-    client = _get_client()
-    response = await client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=512,
+    model = get_model_config().fast
+
+    response = await complete(
+        model=model,
         messages=[{"role": "user", "content": prompt}],
+        max_tokens=512,
     )
-    raw = response.content[0].text
-    logger.info("constraint_extraction", raw=raw)
-    parsed = extract_json(raw)
+
+    logger.info("constraint_extraction", raw=response.text)
+    parsed = extract_json(response.text)
     return [Constraint(**c) for c in parsed]

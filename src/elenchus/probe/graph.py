@@ -35,6 +35,9 @@ _COUNCILOR_MAP = {
 
 class ProbeState(TypedDict, total=False):
     council_result: CouncilResult
+    perturbation_budget: int
+    confidence_threshold: float
+    reject_threshold: float
     constraints: list[Constraint]
     perturbations: list[Perturbation]
     predictions: list[dict]
@@ -58,7 +61,8 @@ async def extract_constraints_node(state: ProbeState) -> dict:
 
 
 async def generate_perturbations_node(state: ProbeState) -> dict:
-    perturbations = generate_perturbations(state["constraints"], budget=3)
+    budget = state.get("perturbation_budget", 3)
+    perturbations = generate_perturbations(state["constraints"], budget=budget)
     return {"perturbations": perturbations}
 
 
@@ -156,7 +160,7 @@ async def score_alignment_node(state: ProbeState) -> dict:
 
         for pred in matching_preds:
             try:
-                predicted = float(pred.get("predicted_answer", 0))
+                predicted = float(pred.get("new_answer", 0))
             except (ValueError, TypeError):
                 predicted = 0.0
 
@@ -166,7 +170,7 @@ async def score_alignment_node(state: ProbeState) -> dict:
                 new_value=perturbation.new_value,
                 original_answer=original_answer,
                 actual_answer=actual,
-                predicted_reasoning=pred.get("predicted_reasoning", pred.get("mechanism", "")),
+                new_reasoning=pred.get("new_reasoning", pred.get("mechanism", "")),
             )
 
             score = compute_alignment_score(
@@ -180,7 +184,7 @@ async def score_alignment_node(state: ProbeState) -> dict:
                 SensitivityResult(
                     perturbation=perturbation,
                     predicted_answer=predicted,
-                    predicted_reasoning=pred.get("predicted_reasoning", pred.get("mechanism", "")),
+                    predicted_reasoning=pred.get("new_reasoning", pred.get("mechanism", "")),
                     actual_answer=actual,
                     alignment_score=score,
                     reasoning_quality=mechanism_score,
@@ -194,7 +198,13 @@ async def score_alignment_node(state: ProbeState) -> dict:
             sensitivity_map[constraint_name] = sum(scores) / len(scores) if scores else 0.0
 
     overall = sum(sensitivity_map.values()) / len(sensitivity_map) if sensitivity_map else 0.0
-    verdict, recommendation = compute_overall_verdict(overall)
+    confidence_threshold = state.get("confidence_threshold", 0.80)
+    reject_threshold = state.get("reject_threshold", 0.50)
+    verdict, recommendation = compute_overall_verdict(
+        overall,
+        confidence_threshold=confidence_threshold,
+        reject_threshold=reject_threshold,
+    )
 
     probe_result = DeutschProbeResult(
         verdict=verdict,

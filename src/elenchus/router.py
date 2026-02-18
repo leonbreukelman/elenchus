@@ -1,55 +1,44 @@
-"""Problem router — classifies math problems using a Haiku-class LLM call."""
+"""Problem router — classifies math problems by domain, type, and complexity."""
 
 from __future__ import annotations
 
-import anthropic
 import structlog
 
 from elenchus import extract_json
+from elenchus.config import get_model_config
+from elenchus.llm import complete
 from elenchus.state import RoutingResult
 
-log = structlog.get_logger()
+logger = structlog.get_logger()
 
-ROUTING_MODEL = "claude-haiku-4-5-20251001"
+SYSTEM_PROMPT = """\
+You are a math problem classifier. Given a math problem, identify:
 
-ROUTING_PROMPT = """\
-You are a math problem classifier. Analyze the given problem and return a JSON object with:
+1. domain: the mathematical domain (algebra, calculus, statistics, arithmetic, geometry, etc.)
+2. problem_type: specific type within the domain (linear_equation, quadratic, word_problem, etc.)
+3. extracted_variables: list of variable names mentioned in the problem
+4. complexity: low, medium, or high
 
-- "domain": the mathematical domain (e.g. "algebra", "calculus", "arithmetic", "geometry", "statistics")
-- "problem_type": specific type within the domain (e.g. "linear_equation", "quadratic", "word_problem", "integral")
-- "extracted_variables": list of variable names or key quantities mentioned in the problem
-- "complexity": one of "low", "medium", "high"
-
-Return ONLY valid JSON, no markdown fences or extra text.
+Return ONLY valid JSON with these four fields. No markdown fences or extra text.
 """
 
 
-def _get_client() -> anthropic.AsyncAnthropic:
-    """Factory for the Anthropic async client. Isolated for easy mocking."""
-    return anthropic.AsyncAnthropic()
-
-
 async def route_problem(problem: str) -> RoutingResult:
-    """Classify a math problem by domain, type, variables, and complexity.
+    """Route a problem by classifying its domain and complexity.
 
-    Sends the problem to a Haiku-class model and parses the JSON response
-    into a :class:`RoutingResult`.
+    Uses the fast model tier — routing doesn't need the most capable model.
     """
-    client = _get_client()
+    model = get_model_config().fast
 
-    log.debug("router.classifying", problem=problem[:80])
+    logger.debug("routing", problem=problem[:80])
 
-    response = await client.messages.create(
-        model=ROUTING_MODEL,
-        max_tokens=256,
+    response = await complete(
+        model=model,
         messages=[{"role": "user", "content": problem}],
-        system=ROUTING_PROMPT,
+        system=SYSTEM_PROMPT,
     )
 
-    raw = response.content[0].text
-    log.debug("router.raw_response", raw=raw[:200])
-
-    data = extract_json(raw)
+    data = extract_json(response.text)
 
     result = RoutingResult(
         domain=data["domain"],
@@ -58,11 +47,5 @@ async def route_problem(problem: str) -> RoutingResult:
         complexity=data["complexity"],
     )
 
-    log.info(
-        "router.classified",
-        domain=result.domain,
-        problem_type=result.problem_type,
-        complexity=result.complexity,
-    )
-
+    logger.info("routed", domain=result.domain, complexity=result.complexity)
     return result

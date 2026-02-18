@@ -9,7 +9,14 @@ import pytest
 
 from elenchus.council.algebraic import AlgebraicCouncilor
 from elenchus.council.base import BaseCouncilor
+from elenchus.llm import LLMResponse, UsageInfo
 from elenchus.state import CouncilorResult
+
+
+def _make_llm_response(data: dict) -> LLMResponse:
+    """Helper to build an LLMResponse from a dict."""
+    return LLMResponse(text=json.dumps(data), model="test", usage=UsageInfo())
+
 
 # ---------------------------------------------------------------------------
 # AlgebraicCouncilor
@@ -25,23 +32,15 @@ class TestAlgebraicCouncilor:
         assert c.strategy == "algebraic"
 
     async def test_solve(self):
-        mock_response = MagicMock()
-        mock_response.content = [
-            MagicMock(
-                text=json.dumps(
-                    {
-                        "answer": 7.0,
-                        "reasoning": "2x + 3 = 17 => 2x = 14 => x = 7",
-                        "confidence": 0.95,
-                    }
-                )
-            )
-        ]
+        mock_response = _make_llm_response(
+            {
+                "answer": 7.0,
+                "reasoning": "2x + 3 = 17 => 2x = 14 => x = 7",
+                "confidence": 0.95,
+            }
+        )
 
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_response)
-
-        with patch("elenchus.council.algebraic._get_client", return_value=mock_client):
+        with patch("elenchus.council.base.complete", new_callable=AsyncMock, return_value=mock_response):
             councilor = AlgebraicCouncilor()
             result = await councilor.solve("Solve for x: 2x + 3 = 17")
 
@@ -52,25 +51,17 @@ class TestAlgebraicCouncilor:
         assert result.confidence == 0.95
         assert result.code is None
 
-    async def test_predict(self):
-        mock_response = MagicMock()
-        mock_response.content = [
-            MagicMock(
-                text=json.dumps(
-                    {
-                        "predicted_answer": 10.0,
-                        "predicted_reasoning": "If the constant changes from 3 to 6, 2x + 6 = 17 => x = 5.5",
-                    }
-                )
-            )
-        ]
+    async def test_instruct(self):
+        mock_response = _make_llm_response(
+            {
+                "new_answer": 10.0,
+                "new_reasoning": "If the constant changes from 3 to 6, 2x + 6 = 17 => x = 5.5",
+            }
+        )
 
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_response)
-
-        with patch("elenchus.council.algebraic._get_client", return_value=mock_client):
+        with patch("elenchus.council.base.complete", new_callable=AsyncMock, return_value=mock_response):
             councilor = AlgebraicCouncilor()
-            result = await councilor.predict(
+            result = await councilor.instruct(
                 problem="Solve for x: 2x + 3 = 17",
                 original_answer=7.0,
                 original_reasoning="2x + 3 = 17 => x = 7",
@@ -80,14 +71,13 @@ class TestAlgebraicCouncilor:
             )
 
         assert isinstance(result, dict)
-        assert result["predicted_answer"] == 10.0
-        assert "predicted_reasoning" in result
+        assert result["new_answer"] == 10.0
+        assert "new_reasoning" in result
 
 
 @pytest.mark.asyncio
 async def test_algebraic_uses_calibrated_prompt_when_available(monkeypatch):
     """When a calibration artifact exists, the councilor should use the DSPy program."""
-    from unittest.mock import MagicMock
 
     from elenchus.calibration import loader as loader_module
 

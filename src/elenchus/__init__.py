@@ -47,7 +47,7 @@ def extract_json(text: str) -> object:
             if c == "\\":
                 escape_next = True
                 continue
-            if c == '"' and not escape_next:
+            if c == '"':
                 in_string = not in_string
                 continue
             if in_string:

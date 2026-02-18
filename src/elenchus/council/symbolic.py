@@ -2,21 +2,45 @@
 
 from __future__ import annotations
 
-from typing import Any
+import re
 
-import anthropic
 import structlog
 
-from elenchus import extract_json
+from elenchus.config import get_model_config
 from elenchus.council.base import BaseCouncilor
+from elenchus.llm import complete
 from elenchus.state import CouncilorResult
 from elenchus.tools.sandbox import execute_code
 
 log = structlog.get_logger()
 
-SOLVE_MODEL = "claude-sonnet-4-5-20250929"
 
-SOLVE_PROMPT = """\
+def _parse_numeric_output(output: str) -> float:
+    """Extract a numeric answer from sandbox output.
+
+    Tries in order:
+    1. Last line as a plain float
+    2. Last number found anywhere in the output
+    """
+    lines = output.strip().splitlines()
+    last_line = lines[-1].strip()
+    try:
+        return float(last_line)
+    except ValueError:
+        pass
+    # Find all numbers in the output, return the last one
+    numbers = re.findall(r"-?\d+\.?\d*(?:e[+-]?\d+)?", output)
+    if numbers:
+        return float(numbers[-1])
+    raise ValueError(f"No numeric value found in output: {output!r}")
+
+
+class SymbolicCouncilor(BaseCouncilor):
+    """Councilor that generates SymPy code and executes it in a sandbox."""
+
+    strategy: str = "symbolic"
+
+    solve_prompt: str = """\
 You are a mathematical solver that generates SymPy Python code.
 Given a math problem, write Python code using SymPy to solve it.
 The code MUST print the final numeric answer as the last line of output.
@@ -36,8 +60,8 @@ Return ONLY valid JSON with:
 No markdown fences or extra text.
 """
 
-PREDICT_PROMPT = """\
-You previously solved this problem:
+    instruct_prompt: str = """\
+You previously solved this problem by generating and executing SymPy code:
 
 Problem: {problem}
 Your answer: {original_answer}
@@ -46,64 +70,34 @@ Your reasoning: {original_reasoning}
 Now a constraint has changed. The {constraint_role} "{original_value}" \
 has been changed to "{new_value}".
 
-Predict what the new answer would be under this change.
+Using your understanding of the mathematical structure, calculate the new \
+answer step by step with this changed value. Show the complete derivation.
 Return ONLY valid JSON with:
-- "predicted_answer": the new numeric answer
-- "predicted_reasoning": step-by-step reasoning for the new answer
+- "new_answer": the new numeric answer (a number, not a string)
+- "new_reasoning": the complete step-by-step calculation with the new value
 
 No markdown fences or extra text.
 """
 
-
-def _get_client() -> anthropic.AsyncAnthropic:
-    """Factory for the Anthropic async client. Isolated for easy mocking."""
-    return anthropic.AsyncAnthropic()
-
-
-def _parse_numeric_output(output: str) -> float:
-    """Extract a numeric answer from sandbox output.
-
-    Tries in order:
-    1. Last line as a plain float
-    2. Last number found anywhere in the output
-    """
-    lines = output.strip().splitlines()
-    last_line = lines[-1].strip()
-    try:
-        return float(last_line)
-    except ValueError:
-        pass
-    # Find all numbers in the output, return the last one
-    import re
-
-    numbers = re.findall(r"-?\d+\.?\d*(?:e[+-]?\d+)?", output)
-    if numbers:
-        return float(numbers[-1])
-    raise ValueError(f"No numeric value found in output: {output!r}")
-
-
-class SymbolicCouncilor(BaseCouncilor):
-    """Councilor that generates SymPy code and executes it in a sandbox."""
-
-    strategy: str = "symbolic"
-
     async def solve(self, problem: str) -> CouncilorResult:
-        """Generate SymPy code, execute in sandbox, return parsed result."""
-        client = _get_client()
+        """Generate SymPy code, execute in sandbox, return parsed result.
+
+        Overrides BaseCouncilor.solve() because the symbolic councilor needs
+        to execute code rather than just parsing JSON from the LLM response.
+        """
+        model = get_model_config().capable
 
         log.debug("symbolic.solve", problem=problem[:80])
 
-        response = await client.messages.create(
-            model=SOLVE_MODEL,
-            max_tokens=1024,
+        response = await complete(
+            model=model,
             messages=[{"role": "user", "content": problem}],
-            system=SOLVE_PROMPT,
+            system=self.solve_prompt,
         )
 
-        raw = response.content[0].text
-        log.debug("symbolic.raw_response", raw=raw[:200])
+        from elenchus import extract_json
 
-        data = extract_json(raw)
+        data = extract_json(response.text)
         code = data["code"]
         reasoning = data["reasoning"]
 
@@ -111,24 +105,33 @@ class SymbolicCouncilor(BaseCouncilor):
         sandbox_result = await execute_code(code)
 
         if sandbox_result.success:
+            # Try clean parse first (last line is a plain number)
+            lines = sandbox_result.output.strip().splitlines()
+            last_line = lines[-1].strip() if lines else ""
             try:
-                answer = _parse_numeric_output(sandbox_result.output)
-            except (ValueError, IndexError):
-                log.warning("symbolic.parse_failed", output=sandbox_result.output[:200])
-                return CouncilorResult(
-                    strategy=self.strategy,
-                    answer=None,
-                    reasoning=reasoning,
-                    confidence=0.0,
-                    code=code,
-                )
+                answer = float(last_line)
+                confidence = 0.95  # High — clean sandbox output
+            except ValueError:
+                # Fallback: regex extraction — less certain
+                try:
+                    answer = _parse_numeric_output(sandbox_result.output)
+                    confidence = 0.70  # Regex fallback — lower confidence
+                except (ValueError, IndexError):
+                    log.warning("symbolic.parse_failed", output=sandbox_result.output[:200])
+                    return CouncilorResult(
+                        strategy=self.strategy,
+                        answer=None,
+                        reasoning=reasoning,
+                        confidence=0.0,
+                        code=code,
+                    )
 
-            log.info("symbolic.solved", answer=answer)
+            log.info("symbolic.solved", answer=answer, confidence=confidence)
             return CouncilorResult(
                 strategy=self.strategy,
                 answer=answer,
                 reasoning=reasoning,
-                confidence=1.0,
+                confidence=confidence,
                 code=code,
             )
 
@@ -140,38 +143,3 @@ class SymbolicCouncilor(BaseCouncilor):
             confidence=0.0,
             code=code,
         )
-
-    async def predict(
-        self,
-        problem: str,
-        original_answer: Any,
-        original_reasoning: str,
-        constraint_role: str,
-        original_value: Any,
-        new_value: Any,
-    ) -> dict:
-        """Predict how the answer changes under a constraint perturbation."""
-        client = _get_client()
-
-        prompt = PREDICT_PROMPT.format(
-            problem=problem,
-            original_answer=original_answer,
-            original_reasoning=original_reasoning,
-            constraint_role=constraint_role,
-            original_value=original_value,
-            new_value=new_value,
-        )
-
-        log.debug("symbolic.predict", constraint_role=constraint_role, new_value=new_value)
-
-        response = await client.messages.create(
-            model=SOLVE_MODEL,
-            max_tokens=1024,
-            messages=[{"role": "user", "content": prompt}],
-            system="You are a precise mathematical predictor. Return only valid JSON.",
-        )
-
-        raw = response.content[0].text
-        log.debug("symbolic.predict_response", raw=raw[:200])
-
-        return extract_json(raw)
