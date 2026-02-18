@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from elenchus import parse_number
 from elenchus.state import ConsensusResult, CouncilorResult
 from elenchus.tools.sympy_tools import answers_match_numeric
 
@@ -45,7 +46,7 @@ def evaluate_consensus(
         for group in groups:
             representative = group[0].answer
             try:
-                if answers_match_numeric(float(result.answer), float(representative), rel_tol):
+                if answers_match_numeric(parse_number(result.answer), parse_number(representative), rel_tol):
                     group.append(result)
                     placed = True
                     break

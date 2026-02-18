@@ -6,7 +6,7 @@ from typing import Any
 
 import structlog
 
-from elenchus import extract_json
+from elenchus import extract_json, parse_number
 from elenchus.config import get_model_config
 from elenchus.llm import complete
 from elenchus.state import CouncilorResult
@@ -79,7 +79,7 @@ class BaseCouncilor:
         """
         result = CouncilorResult(
             strategy=self.strategy,
-            answer=data["answer"],
+            answer=parse_number(data["answer"]),
             reasoning=data["reasoning"],
             confidence=data["confidence"],
             code=None,
