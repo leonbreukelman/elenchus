@@ -5,7 +5,7 @@ Neuro-symbolic math verification engine. Solves math problems with three paralle
 ## Architecture
 
 - `src/elenchus/engine.py` — Main LangGraph (router + council + consensus + conditional probe)
-- `src/elenchus/probe/graph.py` — Deutsch Probe subgraph (extract → perturb → predict → ground truth → score)
+- `src/elenchus/probe/graph.py` — Deutsch Probe subgraph (extract → perturb → instruct → ground truth → score)
 - `src/elenchus/probe/mechanism_judge.py` — LLM judge for reasoning quality (Haiku)
 - `src/elenchus/calibration/` — DSPy prompt optimization pipeline
 - `src/elenchus/state.py` — All shared data models
