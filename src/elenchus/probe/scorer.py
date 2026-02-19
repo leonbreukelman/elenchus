@@ -11,34 +11,34 @@ from elenchus.state import ProbeVerdict
 logger = structlog.get_logger()
 
 
-def compute_quantitative_score(predicted: float, actual: float) -> float:
-    """How close is the predicted answer to the actual? 0.0 to 1.0."""
-    if predicted == actual:
+def compute_quantitative_score(instructed: float, actual: float) -> float:
+    """How close is the instructed answer to the actual? 0.0 to 1.0."""
+    if instructed == actual:
         return 1.0
     denominator = max(abs(actual), 1e-10)
-    return max(0.0, 1.0 - abs(predicted - actual) / denominator)
+    return max(0.0, 1.0 - abs(instructed - actual) / denominator)
 
 
-def compute_direction_score(predicted: float, actual: float, original: float) -> float:
-    """Did the prediction get the direction of change right?"""
-    predicted_dir = math.copysign(1, predicted - original) if predicted != original else 0
+def compute_direction_score(instructed: float, actual: float, original: float) -> float:
+    """Did the instruction get the direction of change right?"""
+    instructed_dir = math.copysign(1, instructed - original) if instructed != original else 0
     actual_dir = math.copysign(1, actual - original) if actual != original else 0
 
     if actual_dir == 0:
-        return 1.0 if predicted_dir == 0 else 0.0
+        return 1.0 if instructed_dir == 0 else 0.0
 
-    return 1.0 if predicted_dir == actual_dir else 0.0
+    return 1.0 if instructed_dir == actual_dir else 0.0
 
 
 def compute_alignment_score(
-    predicted: float,
+    instructed: float,
     actual: float,
     original: float,
     mechanism_score: float = 0.5,
 ) -> float:
     """Weighted alignment: 40% precision, 30% direction, 30% mechanism."""
-    quant = compute_quantitative_score(predicted, actual)
-    direction = compute_direction_score(predicted, actual, original)
+    quant = compute_quantitative_score(instructed, actual)
+    direction = compute_direction_score(instructed, actual, original)
     return 0.4 * quant + 0.3 * direction + 0.3 * mechanism_score
 
 

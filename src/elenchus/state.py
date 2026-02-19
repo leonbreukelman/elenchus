@@ -127,8 +127,8 @@ class SensitivityResult(BaseModel):
     """Result of testing one perturbation against the explanation."""
 
     perturbation: Perturbation
-    predicted_answer: Any
-    predicted_reasoning: str
+    instructed_answer: Any
+    instructed_reasoning: str
     actual_answer: Any
     alignment_score: float
     reasoning_quality: float

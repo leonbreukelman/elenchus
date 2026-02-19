@@ -1,7 +1,7 @@
 import pytest
 
 from elenchus.council.base import BaseCouncilor
-from elenchus.probe.predictor import collect_predictions
+from elenchus.probe.instructor import collect_instructions
 from elenchus.state import Constraint, CouncilorResult, Perturbation
 
 
@@ -21,7 +21,7 @@ class MockCouncilor(BaseCouncilor):
 
 
 @pytest.mark.asyncio
-async def test_collect_predictions_basic():
+async def test_collect_instructions_basic():
     councilors = [MockCouncilor(), MockCouncilor()]
     results = [
         CouncilorResult(strategy="mock", answer=100.0, reasoning="test", confidence=0.9),
@@ -36,20 +36,20 @@ async def test_collect_predictions_basic():
     )
     perturbation = Perturbation(constraint=constraint, new_value=0.08, rationale="test")
 
-    predictions = await collect_predictions(
+    instructions = await collect_instructions(
         councilors=councilors,
         councilor_results=results,
         perturbations=[perturbation],
         problem="test problem",
     )
 
-    assert len(predictions) == 2
-    assert all(p["direction"] == "increase" for p in predictions)
+    assert len(instructions) == 2
+    assert all(p["direction"] == "increase" for p in instructions)
 
 
 @pytest.mark.asyncio
-async def test_predictions_parallel():
-    """Verify multiple predictions run in parallel."""
+async def test_instructions_parallel():
+    """Verify multiple instructions run in parallel."""
     councilors = [MockCouncilor(), MockCouncilor(), MockCouncilor()]
     results = [
         CouncilorResult(strategy="mock", answer=100.0, reasoning="test", confidence=0.9),
@@ -68,11 +68,11 @@ async def test_predictions_parallel():
         Perturbation(constraint=constraint, new_value=0.02, rationale="test2"),
     ]
 
-    predictions = await collect_predictions(
+    instructions = await collect_instructions(
         councilors=councilors,
         councilor_results=results,
         perturbations=perturbations,
         problem="test",
     )
 
-    assert len(predictions) == 6
+    assert len(instructions) == 6

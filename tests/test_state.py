@@ -341,13 +341,13 @@ class TestSensitivityResult:
     def test_construction(self):
         sr = SensitivityResult(
             perturbation=self._make_perturbation(),
-            predicted_answer=9.8,
-            predicted_reasoning="F=ma with new mass.",
+            instructed_answer=9.8,
+            instructed_reasoning="F=ma with new mass.",
             actual_answer=9.81,
             alignment_score=0.99,
             reasoning_quality=0.85,
         )
-        assert sr.predicted_answer == 9.8
+        assert sr.instructed_answer == 9.8
         assert sr.actual_answer == 9.81
         assert sr.alignment_score == 0.99
         assert sr.reasoning_quality == 0.85
@@ -370,8 +370,8 @@ class TestDeutschProbeResult:
         p = Perturbation(constraint=c, new_value=1.5, rationale="test")
         return SensitivityResult(
             perturbation=p,
-            predicted_answer=9.8,
-            predicted_reasoning="F=ma",
+            instructed_answer=9.8,
+            instructed_reasoning="F=ma",
             actual_answer=9.81,
             alignment_score=0.99,
             reasoning_quality=0.85,

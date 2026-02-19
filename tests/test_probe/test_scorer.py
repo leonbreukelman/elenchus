@@ -25,7 +25,7 @@ def test_quantitative_wrong():
 def test_direction_correct_increase():
     assert (
         compute_direction_score(
-            predicted=12700.0,
+            instructed=12700.0,
             actual=12702.37,
             original=11614.72,
         )
@@ -36,7 +36,7 @@ def test_direction_correct_increase():
 def test_direction_correct_decrease():
     assert (
         compute_direction_score(
-            predicted=10000.0,
+            instructed=10000.0,
             actual=9500.0,
             original=11614.72,
         )
@@ -47,7 +47,7 @@ def test_direction_correct_decrease():
 def test_direction_wrong():
     assert (
         compute_direction_score(
-            predicted=13000.0,
+            instructed=13000.0,
             actual=9500.0,
             original=11614.72,
         )
@@ -89,13 +89,13 @@ def test_alignment_score_uses_provided_mechanism_score():
     from elenchus.probe.scorer import compute_alignment_score
 
     score_with_high_mechanism = compute_alignment_score(
-        predicted=100.0,
+        instructed=100.0,
         actual=100.0,
         original=90.0,
         mechanism_score=0.9,
     )
     score_with_low_mechanism = compute_alignment_score(
-        predicted=100.0,
+        instructed=100.0,
         actual=100.0,
         original=90.0,
         mechanism_score=0.1,

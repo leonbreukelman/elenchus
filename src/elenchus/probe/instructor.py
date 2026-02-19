@@ -12,14 +12,14 @@ from elenchus.state import CouncilorResult, Perturbation
 logger = structlog.get_logger()
 
 
-async def _single_prediction(
+async def _single_instruction(
     councilor: BaseCouncilor,
     councilor_result: CouncilorResult,
     perturbation: Perturbation,
     problem: str,
 ) -> dict:
     """Get one councilor's response for one perturbation."""
-    prediction = await councilor.instruct(
+    result = await councilor.instruct(
         problem=problem,
         original_answer=councilor_result.answer,
         original_reasoning=councilor_result.reasoning,
@@ -27,23 +27,23 @@ async def _single_prediction(
         original_value=perturbation.constraint.original_value,
         new_value=perturbation.new_value,
     )
-    prediction["_strategy"] = councilor.strategy
-    prediction["_perturbation"] = perturbation.constraint.name
-    return prediction
+    result["_strategy"] = councilor.strategy
+    result["_perturbation"] = perturbation.constraint.name
+    return result
 
 
-async def collect_predictions(
+async def collect_instructions(
     councilors: list[BaseCouncilor],
     councilor_results: list[CouncilorResult],
     perturbations: list[Perturbation],
     problem: str,
 ) -> list[dict]:
-    """Collect all councilor predictions for all perturbations in parallel."""
+    """Collect all councilor instructions for all perturbations in parallel."""
     tasks = []
     for councilor, result in zip(councilors, councilor_results):
         for perturbation in perturbations:
-            tasks.append(_single_prediction(councilor, result, perturbation, problem))
+            tasks.append(_single_instruction(councilor, result, perturbation, problem))
 
-    predictions = await asyncio.gather(*tasks)
-    logger.info("predictions_collected", count=len(predictions))
-    return list(predictions)
+    results = await asyncio.gather(*tasks)
+    logger.info("instructions_collected", count=len(results))
+    return list(results)

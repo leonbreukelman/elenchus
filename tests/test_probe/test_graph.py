@@ -141,7 +141,7 @@ async def test_ground_truth_proceeds_when_symbolic_matches_consensus(monkeypatch
 
 @pytest.mark.asyncio
 async def test_score_alignment_calls_mechanism_judge(monkeypatch):
-    """The scoring node should call judge_mechanism for each prediction."""
+    """The scoring node should call judge_mechanism for each instruction."""
     from unittest.mock import AsyncMock
 
     from elenchus.probe import mechanism_judge as mj_module
@@ -194,7 +194,7 @@ async def test_score_alignment_calls_mechanism_judge(monkeypatch):
     state = {
         "council_result": council_result,
         "perturbations": [perturbation],
-        "predictions": [
+        "instructions": [
             {
                 "_perturbation": "P",
                 "_strategy": "algebraic",

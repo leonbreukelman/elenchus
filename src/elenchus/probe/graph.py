@@ -14,8 +14,8 @@ from elenchus.council.symbolic import SymbolicCouncilor
 from elenchus.probe import mechanism_judge as mechanism_judge_module
 from elenchus.probe.extractor import extract_constraints
 from elenchus.probe.ground_truth import compute_ground_truth
+from elenchus.probe.instructor import collect_instructions
 from elenchus.probe.perturbation import generate_perturbations
-from elenchus.probe.predictor import collect_predictions
 from elenchus.probe.scorer import compute_alignment_score, compute_overall_verdict
 from elenchus.state import (
     Constraint,
@@ -41,7 +41,7 @@ class ProbeState(TypedDict, total=False):
     reject_threshold: float
     constraints: list[Constraint]
     perturbations: list[Perturbation]
-    predictions: list[dict]
+    instructions: list[dict]
     ground_truths: list[dict]
     sensitivity_results: list[SensitivityResult]
     probe_result: DeutschProbeResult
@@ -67,7 +67,7 @@ async def generate_perturbations_node(state: ProbeState) -> dict:
     return {"perturbations": perturbations}
 
 
-async def collect_predictions_node(state: ProbeState) -> dict:
+async def collect_instructions_node(state: ProbeState) -> dict:
     cr = state["council_result"]
     councilors = []
     for result in cr.councilor_results:
@@ -75,13 +75,13 @@ async def collect_predictions_node(state: ProbeState) -> dict:
         if cls:
             councilors.append(cls())
 
-    predictions = await collect_predictions(
+    instructions = await collect_instructions(
         councilors=councilors,
         councilor_results=cr.councilor_results,
         perturbations=state["perturbations"],
         problem=cr.problem,
     )
-    return {"predictions": predictions}
+    return {"instructions": instructions}
 
 
 async def compute_ground_truths_node(state: ProbeState) -> dict:
@@ -157,13 +157,13 @@ async def score_alignment_node(state: ProbeState) -> dict:
         if not perturbation:
             continue
 
-        matching_preds = [p for p in state["predictions"] if p.get("_perturbation") == constraint_name]
+        matching_results = [p for p in state["instructions"] if p.get("_perturbation") == constraint_name]
 
-        for pred in matching_preds:
+        for inst in matching_results:
             try:
-                predicted = parse_number(pred.get("new_answer", 0))
+                instructed = parse_number(inst.get("new_answer", 0))
             except (ValueError, TypeError):
-                predicted = 0.0
+                instructed = 0.0
 
             mechanism_score = await mechanism_judge_module.judge_mechanism(
                 constraint_role=perturbation.constraint.role,
@@ -171,11 +171,11 @@ async def score_alignment_node(state: ProbeState) -> dict:
                 new_value=perturbation.new_value,
                 original_answer=original_answer,
                 actual_answer=actual,
-                new_reasoning=pred.get("new_reasoning", pred.get("mechanism", "")),
+                new_reasoning=inst.get("new_reasoning", inst.get("mechanism", "")),
             )
 
             score = compute_alignment_score(
-                predicted=predicted,
+                instructed=instructed,
                 actual=actual,
                 original=original_answer,
                 mechanism_score=mechanism_score,
@@ -184,15 +184,15 @@ async def score_alignment_node(state: ProbeState) -> dict:
             sensitivity_results.append(
                 SensitivityResult(
                     perturbation=perturbation,
-                    predicted_answer=predicted,
-                    predicted_reasoning=pred.get("new_reasoning", pred.get("mechanism", "")),
+                    instructed_answer=instructed,
+                    instructed_reasoning=inst.get("new_reasoning", inst.get("mechanism", "")),
                     actual_answer=actual,
                     alignment_score=score,
                     reasoning_quality=mechanism_score,
                 )
             )
 
-        if matching_preds:
+        if matching_results:
             scores = [
                 sr.alignment_score for sr in sensitivity_results if sr.perturbation.constraint.name == constraint_name
             ]
@@ -227,15 +227,15 @@ def build_probe_graph():
 
     builder.add_node("extract_constraints", extract_constraints_node)
     builder.add_node("generate_perturbations", generate_perturbations_node)
-    builder.add_node("collect_predictions", collect_predictions_node)
+    builder.add_node("collect_instructions", collect_instructions_node)
     builder.add_node("compute_ground_truths", compute_ground_truths_node)
     builder.add_node("score_alignment", score_alignment_node)
 
     builder.add_edge(START, "extract_constraints")
     builder.add_edge("extract_constraints", "generate_perturbations")
-    builder.add_edge("generate_perturbations", "collect_predictions")
+    builder.add_edge("generate_perturbations", "collect_instructions")
     builder.add_edge("generate_perturbations", "compute_ground_truths")
-    builder.add_edge("collect_predictions", "score_alignment")
+    builder.add_edge("collect_instructions", "score_alignment")
     builder.add_edge("compute_ground_truths", "score_alignment")
     builder.add_edge("score_alignment", END)
 

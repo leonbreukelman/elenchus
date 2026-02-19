@@ -80,7 +80,7 @@ class TestSymbolicCouncilor:
         assert result.code is not None
 
     async def test_instruct(self):
-        """Predict uses LLM (not code execution) like other councilors."""
+        """Instruct uses LLM (not code execution) like other councilors."""
         mock_response = _make_llm_response(
             {
                 "new_answer": 5.5,
