@@ -75,6 +75,40 @@ class Constraint(BaseModel):
     role: str
     perturbation_range: tuple[float, float]
 
+    @field_validator("original_value", mode="before")
+    @classmethod
+    def _coerce_original_value(cls, v: object) -> object:
+        if isinstance(v, (int, float)):
+            return v
+        if isinstance(v, str):
+            from elenchus import parse_number
+
+            try:
+                return parse_number(v)
+            except ValueError:
+                return v  # Let it through as string if parse fails
+        return v
+
+    @field_validator("perturbation_range", mode="before")
+    @classmethod
+    def _coerce_perturbation_range(
+        cls, v: object
+    ) -> tuple[float, float] | object:
+        if isinstance(v, (list, tuple)) and len(v) == 2:
+            coerced: list[float] = []
+            for item in v:
+                if isinstance(item, str):
+                    from elenchus import parse_number
+
+                    try:
+                        coerced.append(parse_number(item))
+                    except ValueError:
+                        coerced.append(float(item))
+                else:
+                    coerced.append(item)
+            return tuple(coerced)
+        return v
+
     @field_validator("dtype", mode="before")
     @classmethod
     def _coerce_legacy_dtype(cls, v: str) -> str:

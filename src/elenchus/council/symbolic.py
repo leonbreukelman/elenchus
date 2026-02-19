@@ -6,6 +6,7 @@ import re
 
 import structlog
 
+from elenchus import parse_number
 from elenchus.config import get_model_config
 from elenchus.council.base import BaseCouncilor
 from elenchus.llm import complete
@@ -25,7 +26,7 @@ def _parse_numeric_output(output: str) -> float:
     lines = output.strip().splitlines()
     last_line = lines[-1].strip()
     try:
-        return float(last_line)
+        return parse_number(last_line)
     except ValueError:
         pass
     # Find all numbers in the output, return the last one
@@ -112,7 +113,7 @@ No markdown fences or extra text.
             lines = sandbox_result.output.strip().splitlines()
             last_line = lines[-1].strip() if lines else ""
             try:
-                answer = float(last_line)
+                answer = parse_number(last_line)
                 confidence = 0.95  # High — clean sandbox output
             except ValueError:
                 # Fallback: regex extraction — less certain

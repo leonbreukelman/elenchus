@@ -7,6 +7,7 @@ from typing import TypedDict
 import structlog
 from langgraph.graph import END, START, StateGraph
 
+from elenchus import parse_number
 from elenchus.council.algebraic import AlgebraicCouncilor
 from elenchus.council.numerical import NumericalCouncilor
 from elenchus.council.symbolic import SymbolicCouncilor
@@ -95,8 +96,8 @@ async def compute_ground_truths_node(state: ProbeState) -> dict:
 
     # Validate: symbolic answer must match consensus before trusting the code
     try:
-        symbolic_answer = float(symbolic_result.answer)
-        consensus_answer = float(cr.consensus.answer)
+        symbolic_answer = parse_number(symbolic_result.answer)
+        consensus_answer = parse_number(cr.consensus.answer)
         rel_error = abs(symbolic_answer - consensus_answer) / max(abs(consensus_answer), 1e-10)
         if rel_error > 1e-3:
             logger.warning(
@@ -127,7 +128,7 @@ async def compute_ground_truths_node(state: ProbeState) -> dict:
 
 async def score_alignment_node(state: ProbeState) -> dict:
     cr = state["council_result"]
-    original_answer = float(cr.consensus.answer)
+    original_answer = parse_number(cr.consensus.answer)
 
     sensitivity_results = []
     sensitivity_map: dict[str, float] = {}
@@ -137,7 +138,7 @@ async def score_alignment_node(state: ProbeState) -> dict:
             continue
 
         try:
-            actual = float(gt["output"])
+            actual = parse_number(gt["output"])
         except (ValueError, TypeError):
             # Ground truth output isn't a plain number — try extracting last number
             import re
@@ -160,7 +161,7 @@ async def score_alignment_node(state: ProbeState) -> dict:
 
         for pred in matching_preds:
             try:
-                predicted = float(pred.get("new_answer", 0))
+                predicted = parse_number(pred.get("new_answer", 0))
             except (ValueError, TypeError):
                 predicted = 0.0
 

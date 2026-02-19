@@ -19,8 +19,15 @@ def _sanitize_json_controls(text: str) -> str:
     in_string = False
     escape_next = False
 
+    _VALID_JSON_ESCAPES = set('"\\/bfnrtu')
+
     for ch in text:
         if escape_next:
+            # Inside a string, only valid JSON escape targets are allowed.
+            # If the character is NOT a valid target, drop the preceding
+            # backslash (already appended) so e.g. \$ becomes just $.
+            if in_string and ch not in _VALID_JSON_ESCAPES:
+                out.pop()  # remove the backslash
             out.append(ch)
             escape_next = False
             continue

@@ -37,6 +37,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+from elenchus import parse_number
 from elenchus.calibration.dataset import load_calibration_problems
 from elenchus.config import get_model_config
 from elenchus.council.algebraic import AlgebraicCouncilor
@@ -44,9 +45,8 @@ from elenchus.council.consensus import evaluate_consensus
 from elenchus.council.numerical import NumericalCouncilor
 from elenchus.council.symbolic import SymbolicCouncilor
 from elenchus.probe.graph import build_probe_graph
-from elenchus.state import CouncilResult, CouncilorResult, RoutingResult
+from elenchus.state import CouncilorResult, CouncilResult, RoutingResult
 from elenchus.tools.sympy_tools import answers_match_numeric
-
 
 # ---------------------------------------------------------------------------
 # Data classes
@@ -157,7 +157,7 @@ async def run_one_problem(
             if consensus.answer is not None:
                 try:
                     answer_correct = answers_match_numeric(
-                        float(consensus.answer), expected, rel_tol
+                        parse_number(consensus.answer), expected, rel_tol
                     )
                 except (ValueError, TypeError):
                     pass

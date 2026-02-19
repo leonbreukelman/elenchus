@@ -6,6 +6,7 @@ import random
 
 import structlog
 
+from elenchus import parse_number
 from elenchus.state import Constraint, ConstraintDtype, Perturbation
 
 logger = structlog.get_logger()
@@ -23,7 +24,7 @@ def _coerce_to_dtype(value: float, constraint: Constraint) -> float | int:
 def _moderate_shift(constraint: Constraint) -> float:
     """30-50% shift from original value, staying within range."""
     lo, hi = constraint.perturbation_range
-    original = float(constraint.original_value)
+    original = parse_number(constraint.original_value)
     shift_factor = random.uniform(0.3, 0.5) * random.choice([-1, 1])
     new_val = original * (1 + shift_factor)
     return max(lo, min(hi, new_val))
@@ -41,7 +42,7 @@ def _boundary_value(constraint: Constraint) -> float:
 def _subtle_shift(constraint: Constraint) -> float:
     """5-10% shift for precision testing."""
     lo, hi = constraint.perturbation_range
-    original = float(constraint.original_value)
+    original = parse_number(constraint.original_value)
     shift_factor = random.uniform(0.05, 0.10) * random.choice([-1, 1])
     new_val = original * (1 + shift_factor)
     return max(lo, min(hi, new_val))

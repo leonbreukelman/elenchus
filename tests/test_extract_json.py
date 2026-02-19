@@ -102,6 +102,34 @@ class TestExtractJsonSanitization:
         result = extract_json(raw)
         assert result["answer"] == 5
 
+    def test_invalid_escape_dollar(self):
+        r"""Invalid \$ escape inside string value is repaired."""
+        raw = r'{"answer": 1, "reasoning": "costs \$5"}'
+        result = extract_json(raw)
+        assert result["answer"] == 1
+        assert "$5" in result["reasoning"]
+
+    def test_invalid_escape_parens(self):
+        r"""Invalid \( and \) escapes inside string values are repaired."""
+        raw = r'{"answer": 2, "reasoning": "solve \(x + 1\) = 3"}'
+        result = extract_json(raw)
+        assert result["answer"] == 2
+        assert "(x + 1)" in result["reasoning"]
+
+    def test_invalid_escape_mixed_with_valid(self):
+        r"""Valid escapes like \n are preserved while invalid ones like \$ are fixed."""
+        raw = '{"answer": 3, "reasoning": "line1\\nline2 costs \\$10"}'
+        result = extract_json(raw)
+        assert result["answer"] == 3
+        assert "line1\nline2" in result["reasoning"]
+        assert "$10" in result["reasoning"]
+
+    def test_backslash_outside_string_untouched(self):
+        r"""Backslashes outside JSON string values are not altered."""
+        raw = '{"answer": 4, "reasoning": "ok"}'
+        result = extract_json(raw)
+        assert result["answer"] == 4
+
 
 # ---------------------------------------------------------------------------
 # parse_number

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 from typing import Any
 
 import structlog
@@ -69,7 +71,24 @@ class BaseCouncilor:
             max_tokens=get_model_config().max_tokens_capable,
         )
 
-        data = extract_json(response.text)
+        try:
+            data = extract_json(response.text)
+        except json.JSONDecodeError:
+            # Regex fallback — try to extract answer from raw text
+            m = re.search(
+                r'"answer"\s*:\s*(-?\d+\.?\d*(?:e[+-]?\d+)?)', response.text
+            )
+            if m:
+                answer = float(m.group(1))
+                log.warning(f"{self.strategy}.json_fallback_regex", answer=answer)
+                return CouncilorResult(
+                    strategy=self.strategy,
+                    answer=answer,
+                    reasoning="(JSON parse failed — answer extracted via regex)",
+                    confidence=0.3,
+                    code=None,
+                )
+            raise
         return self._post_process_solve(data, problem)
 
     def _post_process_solve(self, data: dict, problem: str) -> CouncilorResult:
@@ -120,4 +139,17 @@ class BaseCouncilor:
             max_tokens=get_model_config().max_tokens_capable,
         )
 
-        return extract_json(response.text)
+        try:
+            return extract_json(response.text)
+        except json.JSONDecodeError:
+            m = re.search(
+                r'"new_answer"\s*:\s*(-?\d+\.?\d*(?:e[+-]?\d+)?)',
+                response.text,
+            )
+            if m:
+                log.warning(f"{self.strategy}.instruct_json_fallback_regex")
+                return {
+                    "new_answer": float(m.group(1)),
+                    "new_reasoning": "(JSON parse failed)",
+                }
+            raise
