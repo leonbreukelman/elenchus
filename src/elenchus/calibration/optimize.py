@@ -27,20 +27,20 @@ _STRATEGY_SIGNATURES = {
 def build_answer_metric(tolerance: float = 1e-2):
     """Build a DSPy metric that checks answer accuracy within tolerance.
 
-    Returns a callable(example, prediction) -> float.
+    Returns a callable(example, result) -> float.
     """
 
-    def metric(example, prediction, trace=None) -> float:
+    def metric(example, result, trace=None) -> float:
         try:
             expected = float(example.answer)
-            predicted = float(prediction.answer)
+            observed = float(result.answer)
         except (ValueError, TypeError, AttributeError):
             return 0.0
 
         if abs(expected) < 1e-10:
-            return 1.0 if abs(predicted) < tolerance else 0.0
+            return 1.0 if abs(observed) < tolerance else 0.0
 
-        rel_error = abs(predicted - expected) / abs(expected)
+        rel_error = abs(observed - expected) / abs(expected)
         return 1.0 if rel_error <= tolerance else 0.0
 
     return metric

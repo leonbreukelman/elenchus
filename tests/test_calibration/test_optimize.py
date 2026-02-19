@@ -20,10 +20,10 @@ def test_metric_scores_correct_answer():
     example = MagicMock()
     example.answer = 42.0
 
-    prediction = MagicMock()
-    prediction.answer = 42.1  # Within 1% tolerance
+    result = MagicMock()
+    result.answer = 42.1  # Within 1% tolerance
 
-    score = metric(example, prediction)
+    score = metric(example, result)
     assert score == 1.0
 
 
@@ -36,10 +36,10 @@ def test_metric_scores_wrong_answer():
     example = MagicMock()
     example.answer = 42.0
 
-    prediction = MagicMock()
-    prediction.answer = 50.0  # 19% off — way outside tolerance
+    result = MagicMock()
+    result.answer = 50.0  # 19% off — way outside tolerance
 
-    score = metric(example, prediction)
+    score = metric(example, result)
     assert score == 0.0
 
 

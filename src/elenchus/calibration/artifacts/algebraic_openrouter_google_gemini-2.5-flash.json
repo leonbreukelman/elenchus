@@ -1,0 +1,66 @@
+{
+  "predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "problem": "A city has a population of 300,000.  50,000 people immigrate to the country and then 30,000 people leave.  After that 1/8 of the population gets pregnant and 1/4 of those people have twins.  How many people are there after the births?",
+        "reasoning": "First, calculate the population after immigration and emigration.\nInitial population = 300,000\nImmigration = 50,000\nEmigration = 30,000\nCurrent population = Initial population + Immigration - Emigration\nCurrent population = 300,000 + 50,000 - 30,000 = 320,000\n\nNext, calculate the number of people who get pregnant.\nPeople pregnant = 1/8 of the current population\nPeople pregnant = (1/8) * 320,000 = 40,000\n\nThen, calculate the number of twins.\nTwin births = 1/4 of the pregnant people\nTwin births = (1/4) * 40,000 = 10,000\n\nThe total number of births is the number of individual births. Each twin birth means 2 babies.\nNumber of singleton births = People pregnant - Twin births = 40,000 - 10,000 = 30,000\nTotal babies born = (Number of singleton births * 1) + (Number of twin births * 2)\nTotal babies born = (30,000 * 1) + (10,000 * 2) = 30,000 + 20,000 = 50,000\n\nFinally, calculate the new total population.\nNew population = Current population + Total babies born\nNew population = 320,000 + 50,000 = 370,000.\nThe problem statement does not specify whether the pregnant people are added to the population again (as a growth factor), or if the phrasing \"1/8 of the population gets pregnant\" implies a birth rate. Based on the common interpretation of population change, births add to the population [biologyinsights.com](https://biologyinsights.com/how-to-calculate-population-growth-rate/). Each birth (whether single or twin) implies an additional individual being added to the population.\n\nThis problem does not fit an exponential or linear growth model directly, as it describes discrete events of immigration, emigration, and births rather than a continuous growth rate [versacalculator.com](https://versacalculator.com/population-growth/), [purecalculators.com](https://purecalculators.com/population-growth-calculator), [calculator.academy](https://calculator.academy/population-growth-calculator/), [www.mymathtables.com](https://www.mymathtables.com/calculator/environmental/population-growth-using-linear-exponential-calculator.html). The calculation involves basic arithmetic operations on population numbers.\n\nInitial population = P_initial = 300,000\nImmigration = I = 50,000\nEmigration = E = 30,000\nPopulation after migration = P_current = P_initial + I - E = 300,000 + 50,000 - 30,000 = 320,000\nFraction of population pregnant = F_preg = 1/8\nNumber of pregnant people = N_preg = P_current * F_preg = 320,000 * (1/8) = 40,000\nFraction of pregnant people having twins = F_twins = 1/4\nNumber of twin pregnancies = N_twin_preg = N_preg * F_twins = 40,000 * (1/4) = 10,000\nNumber of singleton pregnancies = N_single_preg = N_preg - N_twin_preg = 40,000 - 10,000 = 30,000\nBabies from single pregnancies = B_single = N_single_preg * 1 = 30,000 * 1 = 30,000\nBabies from twin pregnancies = B_twin = N_twin_preg * 2 = 10,000 * 2 = 20,000\nTotal babies born = B_total = B_single + B_twin = 30,000 + 20,000 = 50,000\nFinal population = P_final = P_current + B_total = 320,000 + 50,000 = 370,000.\n\nThe question asks for the number of people after birth, so the total population is desired.",
+        "variables": "P_initial = 300000 (initial population)\nI = 50000 (number of immigrants)\nE = 30000 (number of emigrants)\nP_current = 320000 (population after migration)\nF_preg = 0.125 (fraction of population that gets pregnant, 1/8)\nN_preg = 40000 (number of people who get pregnant)\nF_twins = 0.25 (fraction of pregnant people who have twins, 1/4)\nN_twin_preg = 10000 (number of twin pregnancies)\nN_single_preg = 30000 (number of single pregnancies)\nB_single = 30000 (number of babies from single pregnancies)\nB_twin = 20000 (number of babies from twin pregnancies)\nB_total = 50000 (total number of babies born)\nP_final = 370000 (final population after births)",
+        "answer": 370000.0
+      },
+      {
+        "augmented": true,
+        "problem": "Zach baked cookies for a bake sale. On Monday he baked 32 cookies. On Tuesday he ran out of sugar and could only bake half of the number of cookies he baked the day before. On Wednesday he baked three times the number of cookies he did on Tuesday, but his brother ate 4 of those cookies. How many cookies did he have at the end of the three days?",
+        "reasoning": "First, calculate the cookies baked on Monday.\nSecond, calculate the cookies baked on Tuesday. This is half of Monday's amount.\nThird, calculate the initial number of cookies baked on Wednesday (three times Tuesday's amount).\nFourth, account for the cookies his brother ate on Wednesday by subtracting 4.\nFinally, sum the cookies baked on Monday, Tuesday, and the net amount on Wednesday to find the total cookies at the end of the three days.\n\nAccording to [wyzant.com](https://www.wyzant.com/resources/answers/464947/please_help_i_39_m_in_6th_grade_in_this_word_problem_we_39_re_supposed_to_use_a_variable_and_i_39_m_completely_lost), using variables can simplify word problems. Let's define variables for each day's cookie count. The problem involves a series of calculations similar to examples found on [shmoop.com](https://shmoop.com/study-guides/series/word-problem-exercises.html), where quantities change based on previous days' amounts.\n\nDay 1 (Monday): Cookies_Monday = 32\nDay 2 (Tuesday): Cookies_Tuesday = Cookies_Monday / 2 = 32 / 2 = 16\nDay 3 (Wednesday, initial): Cookies_Wednesday_initial = Cookies_Tuesday * 3 = 16 * 3 = 48\nDay 3 (Wednesday, after brother ate some): Cookies_Wednesday_final = Cookies_Wednesday_initial - 4 = 48 - 4 = 44\nTotal cookies = Cookies_Monday + Cookies_Tuesday + Cookies_Wednesday_final = 32 + 16 + 44 = 92\nThis approach of breaking down the problem into daily calculations and summing them is similar to methods seen in other multi-step cookie problems like the \"Cookie Problem\" on [collectedny.org](https://www.collectedny.org/mathmemos/cookie-problem/) and on [algebra.com](https://www.algebra.com/algebra/homework/word/misc/Miscellaneous_Word_Problems.faq.question.313393.html), where daily changes are accounted for to reach a total.",
+        "variables": "Cookies_Monday = number of cookies baked on Monday\nCookies_Tuesday = number of cookies baked on Tuesday\nCookies_Wednesday_initial = number of cookies baked on Wednesday before his brother ate some\nCookies_Wednesday_final = number of cookies baked on Wednesday after his brother ate some\nTotal_Cookies = total number of cookies at the end of three days",
+        "answer": 92.0
+      },
+      {
+        "augmented": true,
+        "problem": "Benny is baking pies for a bake sale. He plans to make ten pumpkin pies, which cost $3 each to make, and twelve cherry pies, which cost $5 each to make. If he wants to make a profit of $20 selling all the pies, how much does he have to charge for each pie if both kinds sell at the same price?",
+        "reasoning": "First, calculate the total cost of making the pumpkin pies.\nCost of pumpkin pies = Number of pumpkin pies * Cost per pumpkin pie\nCost of pumpkin pies = 10 * $3 = $30\n\nNext, calculate the total cost of making the cherry pies.\nCost of cherry pies = Number of cherry pies * Cost per cherry pie\nCost of cherry pies = 12 * $5 = $60\n\nThen, calculate the total cost of making all the pies.\nTotal cost of pies = Cost of pumpkin pies + Cost of cherry pies\nTotal cost of pies = $30 + $60 = $90\n\nBenny wants to make a profit of $20. The total revenue needed is the total cost plus the desired profit.\nTotal revenue = Total cost of pies + Desired profit\nTotal revenue = $90 + $20 = $110\n\nCalculate the total number of pies.\nTotal number of pies = Number of pumpkin pies + Number of cherry pies\nTotal number of pies = 10 + 12 = 22\n\nTo find the selling price per pie, divide the total revenue by the total number of pies. Both kinds of pies sell at the same price.\nSelling price per pie = Total revenue / Total number of pies\nSelling price per pie = $110 / 22 = $5\n\nThe business concepts of fixed and variable costs, and calculating a breakeven selling price, are useful for understanding such problems as explained by [extension.iastate.edu](https://www.extension.iastate.edu/agdm/wholefarm/pdf/c5-202.pdf) and [extension.msstate.edu](https://extension.msstate.edu/sites/default/files/publications/P3671_web.pdf). In this problem, the cost of ingredients for each pie represents variable costs. While this problem asks for a specific profit rather than a breakeven price, the underlying calculations involve total costs and desired revenue in relation to the number of units. Similar structures for calculating total value and price per item are seen in \"revenue problems\" [math.libretexts.org](https://math.libretexts.org/Bookshelves/Algebra/Intermediate_Algebra_for_Science_Technology_Engineering_and_Mathematics_(Diaz)/09%3A_Rational_Equations_and_Applications/9.05%3A_Revenue_problems).",
+        "variables": "num_pumpkin_pies = 10 (number of pumpkin pies)\ncost_per_pumpkin_pie = 3 (cost to make one pumpkin pie)\nnum_cherry_pies = 12 (number of cherry pies)\ncost_per_cherry_pie = 5 (cost to make one cherry pie)\ndesired_profit = 20 (desired profit from selling all pies)\ntotal_cost_pumpkin_pies = 30 (total cost to make all pumpkin pies)\ntotal_cost_cherry_pies = 60 (total cost to make all cherry pies)\ntotal_cost_all_pies = 90 (total cost to make all pies)\ntotal_revenue_needed = 110 (total revenue required to cover costs and achieve profit)\ntotal_pies = 22 (total number of pies to be sold)\nselling_price_per_pie = 5.0 (selling price for each pie)",
+        "answer": 5.0
+      },
+      {
+        "problem": "Kyle bought 2 glass bottles that can hold 15 origami stars each. He then bought another 3 identical glass bottles. How many stars must Kyle make to fill all the glass bottles he bought?",
+        "answer": 75.0
+      },
+      {
+        "problem": "John trains for ultramarathons.  He starts only able to run 8 hours straight but eventually increases that by 75%.  He also increases his speed of 8 mph by 4 mph.  How far can he run now?",
+        "answer": 168.0
+      }
+    ],
+    "signature": {
+      "instructions": "As an expert math word problem solver, your task is to solve complex multi-step math word problems. You will be given a `problem` and must generate the `reasoning` (step-by-step algebraic derivation), `variables` (identified variables with their meanings and computed values), and the final `answer` (a single numeric value).\n\nBegin by understanding the narrative and identifying all quantities and relationships mentioned. Break down the problem into smaller, manageable steps for the `reasoning` to clearly demonstrate the logical flow of calculations and algebraic expressions, ensuring each step builds towards the final solution. For the `variables` output, list every significant value or unknown introduced in the problem or derived during your reasoning. Define what each variable represents and assign its calculated value, if applicable. The final `answer` must be a precise numeric value.\n\nThis process should reflect the rigorous methodology seen in educational resources for solving multi-step word problems, for example, on platforms that provide detailed solutions for math contests [artofproblemsolving.com] or those that break down complex problems into simpler parts [math-only-math.com]. Your solutions should be interpretable and verifiable, similar to the outputs provided by platforms like MathQA [aclanthology.org], [arxiv.org], which emphasizes operation-based formalisms for solving math word problems, or MAWPS [aclanthology.org], [www.semanticscholar.org], repositories focused on math word problems. When numerical calculations are involved, ensure accuracy, and when algebraic principles are central, clearly show the setup and manipulation of equations. For example, problems involving population dynamics may require careful calculation of growth based on discrete events rather than continuous functions [biologyinsights.com], [versacalculator.com], [purecalculators.com], [calculator.academy], [www.mymathtables.com], while financial problems like those involving costs, profits, and revenue can be broken down using basic arithmetic combined with algebraic thinking [extension.iastate.edu], [extension.msstate.edu], [math.libretexts.org].",
+      "fields": [
+        {
+          "prefix": "Problem:",
+          "description": "A math problem to solve"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Step-by-step algebraic derivation"
+        },
+        {
+          "prefix": "Variables:",
+          "description": "Variables identified and their meanings"
+        },
+        {
+          "prefix": "Answer:",
+          "description": "The final numeric answer"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.12",
+      "dspy": "3.1.3",
+      "cloudpickle": "3.1"
+    }
+  }
+}
