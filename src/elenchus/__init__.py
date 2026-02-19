@@ -152,9 +152,7 @@ def extract_json(text: str) -> object:
 
 
 _FRACTION_RE = re.compile(r"^(-?\d+(?:\.\d+)?)\s*/\s*(-?\d+(?:\.\d+)?)$")
-_SYMPY_RATIONAL_RE = re.compile(
-    r"^sympy\.Rational\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)$"
-)
+_SYMPY_RATIONAL_RE = re.compile(r"^sympy\.Rational\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)$")
 
 
 def parse_number(value: object) -> float:

@@ -75,9 +75,7 @@ class BaseCouncilor:
             data = extract_json(response.text)
         except json.JSONDecodeError:
             # Regex fallback — try to extract answer from raw text
-            m = re.search(
-                r'"answer"\s*:\s*(-?\d+\.?\d*(?:e[+-]?\d+)?)', response.text
-            )
+            m = re.search(r'"answer"\s*:\s*(-?\d+\.?\d*(?:e[+-]?\d+)?)', response.text)
             if m:
                 answer = float(m.group(1))
                 log.warning(f"{self.strategy}.json_fallback_regex", answer=answer)

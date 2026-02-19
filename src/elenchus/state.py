@@ -91,9 +91,7 @@ class Constraint(BaseModel):
 
     @field_validator("perturbation_range", mode="before")
     @classmethod
-    def _coerce_perturbation_range(
-        cls, v: object
-    ) -> tuple[float, float] | object:
+    def _coerce_perturbation_range(cls, v: object) -> tuple[float, float] | object:
         if isinstance(v, (list, tuple)) and len(v) == 2:
             coerced: list[float] = []
             for item in v:
