@@ -25,6 +25,7 @@ dev = [
     "pytest-cov>=6",
     "ruff>=0.15",
     "pre-commit>=4",
+    "rich>=13",
 ]
 
 [tool.uv]

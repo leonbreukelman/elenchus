@@ -504,6 +504,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
+    { name = "rich" },
     { name = "ruff" },
 ]
 
@@ -519,6 +520,7 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6" },
     { name = "pyyaml", specifier = ">=6" },
+    { name = "rich", marker = "extra == 'dev'", specifier = ">=13" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15" },
     { name = "structlog", specifier = ">=24.0" },
     { name = "sympy", specifier = ">=1.13" },
