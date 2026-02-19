@@ -84,3 +84,16 @@ See `docs/RESEARCH_AND_LICENSE.md` for practical guidance and tradeoffs.
 - Lint: `uv run ruff check src/ tests/`
 - Format: `uv run ruff format src/ tests/`
 - Pre-commit: `ruff` + `gitleaks`
+
+## What Changed This Week
+
+### 2026-02-19
+
+- Added first-class benchmark dataset UX:
+	- `--dataset`, `--split`, `--dataset-path`
+	- `--preset official-core` (GSM8K + MATH)
+	- `--compare-to` for baseline delta reporting
+- Added explicit research-only / non-production guidance in docs and notebook.
+- Added `docs/RESEARCH_AND_LICENSE.md` with practical license tradeoffs.
+- Fixed calibrated councilor async safety by using task-local DSPy context.
+- Expanded tests for dataset loading, benchmark CLI helpers, and calibrated councilor paths.
