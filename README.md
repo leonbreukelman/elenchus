@@ -1,6 +1,12 @@
 # Elenchus
 
-Neuro-symbolic math verification engine. Solves math problems with three parallel LLM strategies (algebraic, numerical, symbolic), reaches consensus, then verifies genuine understanding via perturbation testing — the Deutsch Probe.
+Elenchus verifies reasoning, not just answers.
+
+Core test: change the constraints and measure whether the mechanism updates correctly.
+
+Pipeline:
+1. Council solves in parallel (algebraic, numerical, symbolic) and forms consensus.
+2. Deutsch Probe perturbs constraints, recomputes ground truth, and scores alignment.
 
 ## Setup
 
@@ -11,58 +17,31 @@ uv run pytest tests/ -v
 
 ## Configuration
 
-Elenchus is model-agnostic — any LiteLLM-compatible provider works (OpenRouter, OpenAI, local). Set model configuration via environment variables:
+Model routing is provider-agnostic through LiteLLM.
 
 ```bash
-# Required — no defaults, will error if unset
+# Required
 ELENCHUS_MODEL_FAST=openrouter/qwen/qwen3-32b
 ELENCHUS_MODEL_CAPABLE=openrouter/deepseek/deepseek-r1-0528
 
-# Optional — token budgets (defaults shown)
+# Optional token budgets
 ELENCHUS_MAX_TOKENS_FAST=4096
 ELENCHUS_MAX_TOKENS_CAPABLE=16384
-
-# Provider credentials
-OPENROUTER_API_KEY=sk-or-v1-...
 ```
 
-For reasoning models (deepseek-r1, qwen3 thinking), increase `ELENCHUS_MAX_TOKENS_CAPABLE` to 32768 for competition-level math.
+For large reasoning models, set `ELENCHUS_MAX_TOKENS_CAPABLE=32768`.
 
-## Benchmarking
+## Benchmark
 
-Run the Deutsch Probe benchmark against the built-in dataset (85 problems from GSM8K, MATH, and hand-curated sets).
+Built-in dataset: 85 problems from GSM8K, MATH, and curated sets.
 
 ```bash
-# Run full benchmark (output to JSON)
 uv run python scripts/benchmark_probe.py --concurrency 2 --output benchmark_results.json
-
-# Run with watchdog (monitor for stalls)
-uv run python scripts/watchdog.py &
 ```
 
-## Architecture
+## Development
 
-Two LangGraph subgraphs:
-
-1. **Council** — Three councilors solve the problem independently. Consensus engine compares answers within configurable tolerance (default 1e-3).
-
-2. **Deutsch Probe** — Perturbs input constraints, has councilors instruct the model to find the new answer, computes ground truth via symbolic code, and scores alignment. An LLM judge evaluates mechanism quality (whether reasoning is mathematically coherent, not just numerically correct).
-
-### Calibration
-
-DSPy/MIPROv2 pipeline for offline prompt optimization:
-
-```bash
-uv run python scripts/calibrate.py --strategy numerical
-uv run python scripts/calibrate.py --strategy algebraic
-```
-
-Optimized prompts are loaded at runtime automatically, falling back to hand-written defaults.
-
-## Dev
-
-- Package manager: `uv`
 - Test: `uv run pytest`
 - Lint: `uv run ruff check src/ tests/`
 - Format: `uv run ruff format src/ tests/`
-- Pre-commit: ruff (lint + format) + gitleaks
+- Pre-commit: `ruff` + `gitleaks`
