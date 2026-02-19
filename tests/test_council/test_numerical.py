@@ -89,7 +89,15 @@ async def test_numerical_uses_calibrated_prompt_when_available(monkeypatch):
 
     import dspy
 
-    monkeypatch.setattr(dspy, "configure", lambda **kwargs: None)
+    class _DummyContext:
+        def __enter__(self):
+            return None
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(dspy, "LM", lambda model: object())
+    monkeypatch.setattr(dspy, "context", lambda **kwargs: _DummyContext())
 
     councilor = NumericalCouncilor()
     result = await councilor.solve("What is 6 * 7?")

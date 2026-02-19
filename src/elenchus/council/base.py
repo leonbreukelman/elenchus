@@ -48,8 +48,8 @@ class BaseCouncilor:
             try:
                 import dspy
 
-                dspy.configure(lm=dspy.LM(model))
-                result = calibrated(problem=problem)
+                with dspy.context(lm=dspy.LM(model)):
+                    result = calibrated(problem=problem)
                 answer = float(result.answer)
                 log.info(f"{self.strategy}.solved_calibrated", answer=answer)
                 return CouncilorResult(

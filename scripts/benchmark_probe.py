@@ -32,13 +32,17 @@ import asyncio
 import json
 import sys
 import time
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from elenchus import parse_number
-from elenchus.calibration.dataset import load_calibration_problems
+from elenchus.calibration.dataset import (
+    available_calibration_datasets,
+    load_calibration_problems,
+)
 from elenchus.config import get_model_config
 from elenchus.council.algebraic import AlgebraicCouncilor
 from elenchus.council.consensus import evaluate_consensus
@@ -47,6 +51,10 @@ from elenchus.council.symbolic import SymbolicCouncilor
 from elenchus.probe.graph import build_probe_graph
 from elenchus.state import CouncilorResult, CouncilResult, RoutingResult
 from elenchus.tools.sympy_tools import answers_match_numeric
+
+PRESET_DATASETS: dict[str, list[str]] = {
+    "official-core": ["gsm8k", "math"],
+}
 
 # ---------------------------------------------------------------------------
 # Data classes
@@ -309,6 +317,98 @@ def print_results(results: list[ProbeProblemResult], summary: ProbeBenchmarkSumm
     print("\n" + "=" * 80)
     print("  DEUTSCH PROBE BENCHMARK — Explanation Quality")
     print("=" * 80)
+
+
+def _load_selected_problems(
+    dataset: str,
+    split: str,
+    dataset_path: str | None,
+    preset: str | None,
+) -> tuple[list[dict], str]:
+    if dataset_path:
+        problems = load_calibration_problems(
+            dataset=dataset,
+            split=split,
+            dataset_path=dataset_path,
+        )
+        return problems, f"local path={dataset_path}"
+
+    if preset:
+        selected = PRESET_DATASETS[preset]
+        all_problems: list[dict] = []
+        seen: set[tuple[str, str]] = set()
+        for dataset_name in selected:
+            rows = load_calibration_problems(dataset=dataset_name, split=split)
+            for row in rows:
+                key = (str(row.get("source", "")), str(row.get("source_id", "")))
+                if key in seen:
+                    continue
+                seen.add(key)
+                all_problems.append(row)
+        return all_problems, f"preset={preset} split={split}"
+
+    problems = load_calibration_problems(dataset=dataset, split=split)
+    return problems, f"dataset={dataset} split={split}"
+
+
+def _load_baseline_summary(path: str | Path) -> dict:
+    payload = json.loads(Path(path).read_text())
+    if not isinstance(payload, dict) or not isinstance(payload.get("summary"), dict):
+        raise ValueError(f"Baseline file must contain a top-level 'summary' object: {path}")
+    return payload["summary"]
+
+
+def _to_float(value: object, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _format_delta(delta: float, as_pct: bool = False) -> str:
+    formatted = f"{delta:+.1f}" if as_pct else f"{delta:+.3f}"
+    return f"{formatted}%" if as_pct else formatted
+
+
+def _print_comparison(current: ProbeBenchmarkSummary, baseline_summary: Mapping[str, object]) -> dict[str, float]:
+    current_dict = asdict(current)
+    metrics = [
+        ("Accuracy %", "answer_accuracy_pct", True, True),
+        ("Verified count", "verified", True, False),
+        ("Refuted count", "refuted", False, False),
+        ("Wrong+Verified", "wrong_and_verified", False, False),
+        ("Correct+Refuted", "correct_and_refuted", False, False),
+        ("Mean probe score", "mean_probe_score", True, False),
+        ("Mean mech score", "mean_mechanism_score", True, False),
+        ("Mean latency s", "mean_latency_s", False, False),
+    ]
+
+    deltas: dict[str, float] = {}
+    print("\n" + "=" * 80)
+    print("  BASELINE COMPARISON")
+    print("=" * 80)
+    print(f"  {'Metric':<20}  {'Current':>10}  {'Baseline':>10}  {'Δ':>10}  {'Direction':>10}")
+    print(f"  {'─'*20}  {'─'*10}  {'─'*10}  {'─'*10}  {'─'*10}")
+
+    for label, key, higher_is_better, is_pct in metrics:
+        cur = _to_float(current_dict.get(key))
+        base = _to_float(baseline_summary.get(key))
+        delta = cur - base
+        deltas[key] = round(delta, 4)
+
+        current_display = f"{cur:.1f}%" if is_pct else f"{cur:.3f}"
+        baseline_display = f"{base:.1f}%" if is_pct else f"{base:.3f}"
+        direction = "better" if (delta >= 0) == higher_is_better else "worse"
+        if abs(delta) < 1e-12:
+            direction = "flat"
+
+        print(
+            f"  {label:<20}  {current_display:>10}  {baseline_display:>10}  "
+            f"{_format_delta(delta, as_pct=is_pct):>10}  {direction:>10}"
+        )
+
+    print("=" * 80)
+    return deltas
     print(f"  Models:  fast={summary.model_fast}")
     print(f"           capable={summary.model_capable}")
     print(f"  Problems: {summary.total}")
@@ -376,20 +476,56 @@ def print_results(results: list[ProbeProblemResult], summary: ProbeBenchmarkSumm
 
 
 async def main() -> None:
+    dataset_choices = available_calibration_datasets()
     parser = argparse.ArgumentParser(description="Benchmark Deutsch Probe explanation quality")
     parser.add_argument("--limit", type=int, default=0, help="Max problems (0=all)")
+    parser.add_argument("--dataset", type=str, default="builtin", choices=dataset_choices)
+    parser.add_argument("--preset", type=str, default=None, choices=sorted(PRESET_DATASETS))
+    parser.add_argument("--split", type=str, default="train", help="Dataset split")
+    parser.add_argument(
+        "--dataset-path",
+        type=str,
+        default=None,
+        help="Local dataset file (.json or .jsonl); overrides --dataset",
+    )
+    parser.add_argument(
+        "--list-datasets",
+        action="store_true",
+        help="List available datasets and exit",
+    )
     parser.add_argument("--category", type=str, default=None, help="Filter by category")
     parser.add_argument("--tolerance", type=float, default=0.01, help="Relative tolerance")
+    parser.add_argument(
+        "--compare-to",
+        type=str,
+        default=None,
+        help="Path to previous benchmark JSON for summary delta comparison",
+    )
     parser.add_argument("--output", type=str, default=None, help="Write JSON to file")
     parser.add_argument("--concurrency", type=int, default=2, help="Max concurrent problems")
     args = parser.parse_args()
+
+    if args.list_datasets:
+        print("Available datasets:")
+        for name in dataset_choices:
+            print(f"  - {name}")
+        print("\nAvailable presets:")
+        for name, members in sorted(PRESET_DATASETS.items()):
+            print(f"  - {name}: {', '.join(members)}")
+        return
 
     get_model_config.cache_clear()
     config = get_model_config()
 
     print(f"\n  ► Models: fast={config.fast}  capable={config.capable}")
+    problems, dataset_source = _load_selected_problems(
+        dataset=args.dataset,
+        split=args.split,
+        dataset_path=args.dataset_path,
+        preset=args.preset,
+    )
+    print(f"  ► Dataset source: {dataset_source}")
 
-    problems = load_calibration_problems()
     if args.category:
         problems = [p for p in problems if p["category"] == args.category]
     if args.limit:
@@ -412,11 +548,19 @@ async def main() -> None:
 
     print_results(list(results), summary)
 
+    comparison: dict[str, float] | None = None
+    if args.compare_to:
+        baseline_summary = _load_baseline_summary(args.compare_to)
+        comparison = _print_comparison(summary, baseline_summary)
+
     if args.output:
         output_data = {
+            "dataset_source": dataset_source,
             "summary": asdict(summary),
             "results": [asdict(r) for r in results],
         }
+        if comparison is not None:
+            output_data["comparison"] = comparison
         Path(args.output).write_text(json.dumps(output_data, indent=2))
         print(f"\n  Results written to {args.output}")
 

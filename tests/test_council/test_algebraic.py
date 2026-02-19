@@ -90,7 +90,15 @@ async def test_algebraic_uses_calibrated_prompt_when_available(monkeypatch):
 
     import dspy
 
-    monkeypatch.setattr(dspy, "configure", lambda **kwargs: None)
+    class _DummyContext:
+        def __enter__(self):
+            return None
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(dspy, "LM", lambda model: object())
+    monkeypatch.setattr(dspy, "context", lambda **kwargs: _DummyContext())
 
     councilor = AlgebraicCouncilor()
     result = await councilor.solve("Solve for x: 3x + 7 = 22")
