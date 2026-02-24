@@ -720,9 +720,7 @@ def _normalize_problem_row(row: dict, index: int, source_label: str) -> dict:
 
     missing = [k for k in _REQUIRED_KEYS if k not in row]
     if missing:
-        raise ValueError(
-            f"Malformed row at index {index} in {source_label}: missing keys {missing}"
-        )
+        raise ValueError(f"Malformed row at index {index} in {source_label}: missing keys {missing}")
 
     question = str(row["question"]).strip()
     category = str(row["category"]).strip()
@@ -741,9 +739,7 @@ def _normalize_problem_row(row: dict, index: int, source_label: str) -> dict:
     try:
         expected_answer = float(row["expected_answer"])
     except (TypeError, ValueError) as exc:
-        raise ValueError(
-            f"Malformed row at index {index} in {source_label}: expected_answer must be numeric"
-        ) from exc
+        raise ValueError(f"Malformed row at index {index} in {source_label}: expected_answer must be numeric") from exc
 
     return {
         "question": question,
@@ -821,9 +817,7 @@ def _load_local_dataset(dataset_path: Path) -> list[dict]:
         elif isinstance(payload, dict) and isinstance(payload.get("problems"), list):
             raw_rows = payload["problems"]
         else:
-            raise ValueError(
-                f"Malformed local dataset in {dataset_path}: expected list or {{'problems': list}}"
-            )
+            raise ValueError(f"Malformed local dataset in {dataset_path}: expected list or {{'problems': list}}")
     elif suffix == ".jsonl":
         raw_rows = []
         for line_number, line in enumerate(dataset_path.read_text().splitlines(), start=1):
@@ -832,9 +826,7 @@ def _load_local_dataset(dataset_path: Path) -> list[dict]:
             try:
                 parsed = json.loads(line)
             except json.JSONDecodeError as exc:
-                raise ValueError(
-                    f"Invalid JSONL in dataset_path at line {line_number}: {dataset_path}"
-                ) from exc
+                raise ValueError(f"Invalid JSONL in dataset_path at line {line_number}: {dataset_path}") from exc
             raw_rows.append(parsed)
     else:
         raise ValueError(f"Unsupported dataset_path extension: {dataset_path.suffix}")
@@ -880,8 +872,7 @@ def _load_gsm8k(split: str) -> list[dict]:
         )
 
     return [
-        _normalize_problem_row(row, index=i, source_label=f"gsm8k split={split}")
-        for i, row in enumerate(normalized)
+        _normalize_problem_row(row, index=i, source_label=f"gsm8k split={split}") for i, row in enumerate(normalized)
     ]
 
 
@@ -907,8 +898,7 @@ def _load_math(split: str) -> list[dict]:
         )
 
     return [
-        _normalize_problem_row(row, index=i, source_label=f"math split={split}")
-        for i, row in enumerate(normalized)
+        _normalize_problem_row(row, index=i, source_label=f"math split={split}") for i, row in enumerate(normalized)
     ]
 
 
@@ -928,10 +918,7 @@ def load_calibration_problems(
     if dataset_path is not None:
         problems = _load_local_dataset(Path(dataset_path))
     elif dataset == "builtin":
-        problems = [
-            _normalize_problem_row(row, index=i, source_label="builtin")
-            for i, row in enumerate(_PROBLEMS)
-        ]
+        problems = [_normalize_problem_row(row, index=i, source_label="builtin") for i, row in enumerate(_PROBLEMS)]
     elif dataset == "gsm8k":
         problems = _load_gsm8k(split=split)
     elif dataset == "math":
